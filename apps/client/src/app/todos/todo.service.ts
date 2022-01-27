@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { interval, Observable, of } from 'rxjs';
+import { interval, Observable, of, timer } from 'rxjs';
 import {
   map,
   share,
@@ -28,10 +28,10 @@ export class TodoService {
 
   loadFrequently(): Observable<Todo[]> {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return interval(5000).pipe(
+    return timer(5000).pipe(
       switchMap(() => this.query()),
       retryWhen((error: any) => {
-        this.toolbelt.offerHardReload();
+        // this.toolbelt.offerHardReload();
         return error.pipe(delay(2000));
       }),
       shareReplay()
