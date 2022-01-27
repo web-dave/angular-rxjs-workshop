@@ -9,7 +9,7 @@ export class Toolbelt {
   toTodoApi(todo: Todo): TodoApi {
     const mappedTodo = {
       ...todo,
-      isComplete: todo.isDone,
+      isComplete: todo.isDone
     };
     delete mappedTodo.isDone;
     return mappedTodo;
@@ -18,13 +18,14 @@ export class Toolbelt {
   toTodo(todoApi: TodoApi): Todo {
     const mappedTodo = {
       ...todoApi,
-      isDone: todoApi.isComplete,
+      isDone: todoApi.isComplete
     };
     delete mappedTodo.isComplete;
     return mappedTodo;
   }
 
   offerHardReload() {
+    console.log('ERROE!!');
     const openDialog = this.snackbar.open(
       'Was not able loading todos',
       'Retry'
