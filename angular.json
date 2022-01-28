@@ -47,7 +47,8 @@
           "options": {
             "tsConfig": [
               "apps/api/tsconfig.app.json",
-              "apps/api/tsconfig.spec.json"
+              "apps/api/tsconfig.spec.json",
+              "apps/api/cypress/tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**",
@@ -64,6 +65,39 @@
           "outputs": [
             "coverage/apps/api"
           ]
+        },
+        "cypress-run": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "api:serve",
+            "configFile": "apps/api/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "api:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "watch": true,
+            "headless": false,
+            "configFile": "apps/api/cypress.json"
+          }
+        },
+        "e2e": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "api:serve",
+            "watch": true,
+            "headless": false
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "api:serve:production"
+            }
+          }
         }
       }
     },
@@ -78,7 +112,8 @@
           "options": {
             "tsConfig": [
               "libs/api-interfaces/tsconfig.lib.json",
-              "libs/api-interfaces/tsconfig.spec.json"
+              "libs/api-interfaces/tsconfig.spec.json",
+              "libs/api-interfaces/cypress/tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**",
@@ -95,6 +130,39 @@
           "outputs": [
             "coverage/libs/api-interfaces"
           ]
+        },
+        "cypress-run": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "api-interfaces:serve",
+            "configFile": "libs/api-interfaces/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "api-interfaces:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "watch": true,
+            "headless": false,
+            "configFile": "libs/api-interfaces/cypress.json"
+          }
+        },
+        "e2e": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "api-interfaces:serve",
+            "watch": true,
+            "headless": false
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "api-interfaces:serve:production"
+            }
+          }
         }
       }
     },
@@ -192,7 +260,8 @@
           "options": {
             "tsConfig": [
               "apps/client/tsconfig.app.json",
-              "apps/client/tsconfig.spec.json"
+              "apps/client/tsconfig.spec.json",
+              "apps/client/cypress/tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**",
@@ -209,6 +278,39 @@
           "outputs": [
             "coverage/apps/client"
           ]
+        },
+        "cypress-run": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "client:serve",
+            "configFile": "apps/client/cypress.json"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "client:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "watch": true,
+            "headless": false,
+            "configFile": "apps/client/cypress.json"
+          }
+        },
+        "e2e": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "client:serve",
+            "watch": true,
+            "headless": false
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "client:serve:production"
+            }
+          }
         }
       }
     }
