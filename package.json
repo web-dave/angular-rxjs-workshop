@@ -16,7 +16,10 @@
     "start:api": "ng serve --project api",
     "start:playground": "nodemon --config apps/playground/nodemon.json",
     "test": "ng test",
-    "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2015 browser module main"
+    "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2015 browser module main",
+    "e2e": "ng e2e --project client",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "dependencies": {
     "@angular/animations": "12.2.3",
@@ -46,6 +49,7 @@
     "@angular/cli": "12.1.4",
     "@angular/compiler-cli": "12.2.3",
     "@angular/language-service": "12.2.3",
+    "@cypress/schematic": "^1.6.0",
     "@nestjs/schematics": "^7.0.0",
     "@nestjs/testing": "^7.0.0",
     "@nrwl/cli": "12.8.0",
@@ -56,8 +60,9 @@
     "@nrwl/tao": "12.8.0",
     "@nrwl/workspace": "12.8.0",
     "@types/jest": "26.0.8",
-    "@types/node": "14.14.33",
+    "@types/node": "^14.14.33",
     "codelyzer": "6.0.1",
+    "cypress": "latest",
     "dotenv": "10.0.0",
     "eslint": "7.22.0",
     "eslint-plugin-cypress": "^2.10.3",
