@@ -10,7 +10,8 @@ import {
   retry,
   retryWhen,
   delay,
-  catchError
+  catchError,
+  distinctUntilChanged
 } from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
@@ -28,14 +29,31 @@ export class TodoService {
 
   loadFrequently(): Observable<Todo[]> {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return timer(5000).pipe(
-      switchMap(() => this.query()),
+
+    return this.settings.settings$.pipe(
+      switchMap((data) => {
+        if (data.isPollingEnabled) {
+          return timer(0, data.pollingInterval).pipe(
+            switchMap(() => this.query())
+          );
+        } else {
+          return this.query();
+        }
+      }),
       retryWhen((error: any) => {
-        // this.toolbelt.offerHardReload();
         return error.pipe(delay(2000));
       }),
       shareReplay()
     );
+
+    // return timer(0, 5000).pipe(
+    //   switchMap(() => this.query()),
+    //   retryWhen((error: any) => {
+    //     // this.toolbelt.offerHardReload();
+    //     return error.pipe(delay(2000));
+    //   }),
+    //   shareReplay()
+    // );
   }
 
   // TODO: Fix the return type of this method

@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import {
   first,
   map,
+  mapTo,
   merge,
   Observable,
   of,
+  skip,
   Subject,
   tap,
   withLatestFrom
@@ -25,25 +27,25 @@ export class TodosComponent implements OnInit {
   update$$ = new Subject<void>();
   show$: Observable<boolean>;
   hide$: Observable<boolean>;
-  showReload$: Observable<boolean> = of(true);
+  showReload$: Observable<boolean> = of(false);
 
   constructor(private todosService: TodoService) {}
 
   ngOnInit(): void {
-    this.todosInitial$ = this.todosSource$.pipe(
-      first(),
-      tap(() => console.log('First'))
-    );
+    this.todosInitial$ = this.todosSource$.pipe(first());
     this.todosMostRecent$ = this.update$$.pipe(
       withLatestFrom(this.todosSource$),
-      tap((data) => console.log('Reload', data)),
       map(([, todos]) => todos)
+      // map((data) => data[1])
     );
 
     // TODO: Control update of todos in App (back pressure)
     this.todos$ = merge(this.todosInitial$, this.todosMostRecent$);
 
     // TODO: Control display of refresh button
+    this.show$ = this.todosSource$.pipe(skip(1), mapTo(true));
+    this.hide$ = this.update$$.pipe(mapTo(false));
+    this.showReload$ = merge(this.show$, this.hide$);
   }
 
   completeOrIncompleteTodo(todoForUpdate: Todo) {
