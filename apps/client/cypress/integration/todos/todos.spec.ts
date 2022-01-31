@@ -11,13 +11,25 @@ describe('Todos', () => {
   });
 
   it('should check uncheck one item', () => {
-    cy.wait(3000);
+    // cy.wait(3000);
     cy.get('dos-todo-checker')
       .contains('Buy')
-      .should('have.class', 'todo--is-done');
-    cy.get('dos-todo-checker').contains('Buy').click();
+      .get('input')
+      .uncheck({ force: true });
     cy.get('dos-todo-checker')
       .contains('Buy')
-      .should('not.have.class', 'todo--is-done');
+      .then((elem) => {
+        if (elem.hasClass('todo--is-done')) {
+          cy.get('dos-todo-checker').contains('Buy').click();
+          cy.get('dos-todo-checker')
+            .contains('Buy')
+            .should('not.have.class', 'todo--is-done');
+        } else {
+          cy.get('dos-todo-checker').contains('Buy').click();
+          cy.get('dos-todo-checker')
+            .contains('Buy')
+            .should('have.class', 'todo--is-done');
+        }
+      });
   });
 });
