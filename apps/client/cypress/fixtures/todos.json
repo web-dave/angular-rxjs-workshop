@@ -1,0 +1,9 @@
+[
+  { "id": "1", "text": "Buy 🥛", "isPinned": true, "isComplete": false },
+  { "id": "2", "text": "Go 🏃‍♀️", "isComplete": false, "isPinned": false },
+  { "id": "3", "text": "Build 🏡️", "isPinned": false, "isComplete": false },
+  { "id": "4", "text": "⏱ hug 👨‍👩‍👧‍👧", "isComplete": false, "isPinned": true },
+  { "id": "5", "text": "⏱ read 📚", "isComplete": true, "isPinned": false },
+  { "id": "6", "text": "⏱ eat 🥒", "isComplete": false, "isPinned": false },
+  { "id": "7", "text": "⏱ hug 👨‍👩‍👧‍👧", "isComplete": true, "isPinned": true }
+]
