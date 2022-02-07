@@ -1,7 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { interval, Observable, timer } from 'rxjs';
-import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import {
+  delay,
+  map,
+  retry,
+  retryWhen,
+  shareReplay,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
 import { TodoSettings } from './todo-settings.service';
@@ -22,6 +30,7 @@ export class TodoService {
     return timer(0, 4000).pipe(
       switchMap(() =>
         this.query().pipe(
+          retryWhen((error) => error.pipe(delay(1500))),
           tap((data) => console.table(data)),
           tap({ error: () => this.toolbelt.offerHardReload() })
         )
