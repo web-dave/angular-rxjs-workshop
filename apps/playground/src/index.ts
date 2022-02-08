@@ -1,4 +1,7 @@
-import { Observable, timer } from 'rxjs';
+import { BehaviorSubject, Observable, timer } from 'rxjs';
+
+const sub$$ = new BehaviorSubject(12);
+sub$$.value;
 
 // Create observable
 const helloWorld$ = timer(5000, 2000);

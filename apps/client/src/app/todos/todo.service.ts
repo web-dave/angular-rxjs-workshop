@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { interval, Observable, timer } from 'rxjs';
+import { WebSocketSubject } from 'rxjs/webSocket';
 import {
   delay,
   map,
@@ -15,7 +16,11 @@ import { Todo, TodoApi } from './models';
 import { TodoSettings } from './todo-settings.service';
 
 const todosUrl = 'http://localhost:3333/api';
-
+// const foo = new WebSocketSubject(
+//   'ws://localhost:4200/sockjs-node/520/dd4kc5bt/websocket'
+// );
+// foo.subscribe((data) => console.log(data));
+// foo.next('älyifvjodüifgjdsüogihs');
 @Injectable()
 export class TodoService {
   constructor(
@@ -26,6 +31,20 @@ export class TodoService {
 
   loadFrequently(): Observable<Todo[]> {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
+    return this.settings.settings$.pipe(
+      tap((data) => console.table(data)),
+      switchMap((settings) => {
+        if (settings.isPollingEnabled) {
+          return timer(0, settings.pollingInterval).pipe(
+            switchMap(() => this.query())
+          );
+        } else {
+          return this.query();
+        }
+      }),
+      retryWhen((error) => error.pipe(delay(1500))),
+      shareReplay(1)
+    );
 
     return timer(0, 4000).pipe(
       switchMap(() =>
