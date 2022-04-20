@@ -1,33 +1,19 @@
-import { on } from 'events';
-import { writeSync } from 'fs';
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 
-const obs$ = new Observable(function subscribe(observer) {
-  let i = 0;
-  const intv = setInterval(() => {
-    i++;
-    observer.next(i);
-    console.log('inner', i);
-  }, 1000);
-
-  return function unsubscribe() {
-    clearInterval(intv);
-  };
-});
-const http$ = new Observable(function subscribe(observer) {
-  // ws.open(
-  //     on_evnt=>(data => observer.next(data)),
-  //     on_closed=> observer.complete())
-  fetch('').then((data) => {
-    observer.next(data);
-    observer.complete();
-  });
-});
+const obs$ = timer(3000, 2000);
 
 const sub = obs$.subscribe({
-  next: (data) => console.log(data),
+  next: (data) => console.log(1, data),
   error: (err) => console.error(err),
   complete: () => console.info('Fertsch')
 });
+setTimeout(() => {
+  const sub2 = obs$.subscribe({
+    next: (data) => console.log(2, data),
+    error: (err) => console.error(err),
+    complete: () => console.info('Fertsch')
+  });
+  setTimeout(() => sub2.unsubscribe(), 6000);
+}, 2000);
 
-setTimeout(() => sub.unsubscribe(), 4000);
+setTimeout(() => sub.unsubscribe(), 6000);
