@@ -1,3 +1,5 @@
+import { on } from 'events';
+import { writeSync } from 'fs';
 import { Observable } from 'rxjs';
 
 const obs$ = new Observable(function subscribe(observer) {
@@ -8,30 +10,24 @@ const obs$ = new Observable(function subscribe(observer) {
     console.log('inner', i);
   }, 1000);
 
-  setTimeout(() => {
-    observer.complete();
+  return function unsubscribe() {
     clearInterval(intv);
-  }, 3000);
-  //   observer.next(2);
-  //   observer.next(3);
-  //   observer.next(4);
-  //   observer.complete();
-  //   observer.error(new Error('Meeeeh'));
-  //   observer.next(4.1);
+  };
+});
+const http$ = new Observable(function subscribe(observer) {
+  // ws.open(
+  //     on_evnt=>(data => observer.next(data)),
+  //     on_closed=> observer.complete())
+  fetch('').then((data) => {
+    observer.next(data);
+    observer.complete();
+  });
 });
 
-obs$.subscribe({
+const sub = obs$.subscribe({
   next: (data) => console.log(data),
   error: (err) => console.error(err),
   complete: () => console.info('Fertsch')
 });
 
-const obj = {
-  antwort: 42,
-  antworten: function () {
-    return this.antwort;
-  },
-  antworten2: () => {
-    return this?.antwort;
-  }
-};
+setTimeout(() => sub.unsubscribe(), 4000);
