@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, pipe } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
@@ -24,8 +24,10 @@ export class TodoService {
   }
 
   // TODO: Fix the return type of this method
-  private query(): Observable<any> {
-    return this.http.get<TodoApi[]>(`${todosUrl}`);
+  private query(): Observable<Todo[]> {
+    return this.http
+      .get<TodoApi[]>(`${todosUrl}`)
+      .pipe(map((tds) => tds.map((t) => this.toolbelt.toTodo(t))));
     // TODO: Apply mapping to fix display of tasks
   }
 
