@@ -1,15 +1,20 @@
 import { Injectable } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {
+  MatSnackBar,
+  MatSnackBarRef,
+  TextOnlySnackBar
+} from '@angular/material/snack-bar';
 import { Todo, TodoApi } from '../models';
 
 @Injectable()
 export class Toolbelt {
+  openDialog: MatSnackBarRef<TextOnlySnackBar>;
   constructor(private snackbar: MatSnackBar) {}
 
   toTodoApi(todo: Todo): TodoApi {
     const mappedTodo = {
       ...todo,
-      isComplete: todo.isDone,
+      isComplete: todo.isDone
     };
     delete mappedTodo.isDone;
     return mappedTodo;
@@ -18,19 +23,22 @@ export class Toolbelt {
   toTodo(todoApi: TodoApi): Todo {
     const mappedTodo = {
       ...todoApi,
-      isDone: todoApi.isComplete,
+      isDone: todoApi.isComplete
     };
     delete mappedTodo.isComplete;
     return mappedTodo;
   }
 
-  offerHardReload() {
-    const openDialog = this.snackbar.open(
-      'Was not able loading todos',
-      'Retry'
-    );
+  closeDialog() {
+    if (this.openDialog) {
+      this.snackbar.dismiss();
+    }
+  }
 
-    const afterAction = openDialog.onAction().subscribe(() => {
+  offerHardReload() {
+    this.openDialog = this.snackbar.open('Was not able loading todos', 'Retry');
+
+    const afterAction = this.openDialog.onAction().subscribe(() => {
       location.reload();
       afterAction.unsubscribe();
     });
