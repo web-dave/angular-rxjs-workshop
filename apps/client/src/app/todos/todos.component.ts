@@ -6,7 +6,8 @@ import {
   Observable,
   of,
   Subject,
-  withLatestFrom
+  withLatestFrom,
+  skip
 } from 'rxjs';
 
 import { Todo } from './models';
@@ -34,9 +35,9 @@ export class TodosComponent implements OnInit {
     this.todosInitial$ = this.todosSource$.pipe(first());
 
     this.todosMostRecent$ = this.update$$.pipe(
-      withLatestFrom(this.todosSource$),
-      // map(data=> data[1])
-      map(([, data]) => data)
+      withLatestFrom(this.todosSource$.pipe(skip(1))),
+      map((data: [void, Todo[]]) => data[1])
+      // map(([, data]) => data)
     );
     this.todos$ = merge(this.todosInitial$, this.todosMostRecent$);
 
