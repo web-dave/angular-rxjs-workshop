@@ -7,7 +7,8 @@ import {
   of,
   Subject,
   withLatestFrom,
-  skip
+  skip,
+  mapTo
 } from 'rxjs';
 
 import { Todo } from './models';
@@ -42,6 +43,10 @@ export class TodosComponent implements OnInit {
     this.todos$ = merge(this.todosInitial$, this.todosMostRecent$);
 
     // TODO: Control display of refresh button
+    this.show$ = this.todosSource$.pipe(skip(1), mapTo(true));
+    this.hide$ = this.update$$.pipe(mapTo(false));
+
+    this.showReload$ = merge(this.show$, this.hide$);
   }
 
   completeOrIncompleteTodo(todoForUpdate: Todo) {
