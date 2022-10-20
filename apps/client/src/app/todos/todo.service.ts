@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, timer } from 'rxjs';
+import { from, Observable, of, timer } from 'rxjs';
 import {
   map,
   tap,
@@ -9,7 +9,9 @@ import {
   mergeMap,
   concatMap,
   exhaustMap,
-  switchMap
+  switchMap,
+  retry,
+  delay
 } from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
@@ -27,10 +29,23 @@ export class TodoService {
 
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
+    // from(()=>window.ononline)
     return timer(1000, 5000).pipe(
-      concatMap(() =>
-        this.query().pipe(tap({ error: () => this.toolbelt.offerHardReload() }))
+      switchMap(() =>
+        this.query().pipe(
+          retry({
+            delay: (errors) => {
+              console.log(errors);
+              return of('').pipe(delay(2000));
+            },
+            // delay: 2000,
+            count: 2,
+            resetOnSuccess: true
+          }),
+          tap({ error: () => this.toolbelt.offerHardReload() })
+        )
       ),
+      // ==>
       shareReplay(1)
     );
     // return this.query().pipe(
