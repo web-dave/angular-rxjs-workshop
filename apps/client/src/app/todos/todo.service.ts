@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { from, Observable, of, timer } from 'rxjs';
+import { from, interval, Observable, of, timer } from 'rxjs';
 import {
   map,
   tap,
@@ -30,24 +30,44 @@ export class TodoService {
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
     // from(()=>window.ononline)
-    return timer(1000, 5000).pipe(
-      switchMap(() =>
-        this.query().pipe(
-          retry({
-            delay: (errors) => {
-              console.log(errors);
-              return of('').pipe(delay(2000));
-            },
-            // delay: 2000,
-            count: 2,
-            resetOnSuccess: true
-          }),
-          tap({ error: () => this.toolbelt.offerHardReload() })
-        )
+
+    return this.settings.settings$.pipe(
+      switchMap((settings) =>
+        settings.isPollingEnabled
+          ? interval(settings.pollingInterval).pipe(
+              switchMap(() => this.query())
+            )
+          : this.query()
       ),
-      // ==>
-      shareReplay(1)
+      retry({
+        delay: (errors) => {
+          console.log(errors);
+          return of('').pipe(delay(2000));
+        },
+        // delay: 2000,
+        count: 7,
+        resetOnSuccess: true
+      }),
+      share()
     );
+    // return timer(1000, 5000).pipe(
+    //   switchMap(() =>
+    //     this.query().pipe(
+    //       retry({
+    //         delay: (errors) => {
+    //           console.log(errors);
+    //           return of('').pipe(delay(2000));
+    //         },
+    //         // delay: 2000,
+    //         count: 2,
+    //         resetOnSuccess: true
+    //       }),
+    //       tap({ error: () => this.toolbelt.offerHardReload() })
+    //     )
+    //   ),
+    //   // ==>
+    //   shareReplay(1)
+    // );
     // return this.query().pipe(
     //   shareReplay(1),
     //   tap({ error: () => this.toolbelt.offerHardReload() })
