@@ -32,6 +32,7 @@ export class TodoService {
     // from(()=>window.ononline)
 
     return this.settings.settings$.pipe(
+      tap(console.log),
       switchMap((settings) =>
         settings.isPollingEnabled
           ? interval(settings.pollingInterval).pipe(
