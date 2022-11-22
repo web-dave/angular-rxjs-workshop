@@ -62,7 +62,9 @@ export class TodosComponent implements OnInit, OnDestroy {
     // );
 
     this.todosMostRecent$ = this.update$$.pipe(
-      withLatestFrom(this.todosSource$),
+      withLatestFrom(
+        this.todosSource$.pipe(tap(() => this._showReload$.next(true)))
+      ),
       tap(() => this._showReload$.next(false)),
       // map((values: [void, Todo[]]) => values[1]),
       map(([, todos]) => todos) // fancy aber evtl nicht gut lesbar
@@ -71,7 +73,7 @@ export class TodosComponent implements OnInit, OnDestroy {
 
     // TODO: Control display of refresh button
 
-    this.todosSource$.pipe(tap(() => this._showReload$.next(true)));
+    // this.todosSource$.pipe(tap(() => this._showReload$.next(true)));
 
     // _show$: Observable<boolean> = this.todosSource$.pipe(
     //   skip(1),
