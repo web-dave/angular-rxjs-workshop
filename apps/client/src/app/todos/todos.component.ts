@@ -25,9 +25,14 @@ export class TodosComponent implements OnInit {
   todosMostRecent$: Observable<Todo[]>;
 
   update$$ = new Subject<number>();
-  show$: Observable<boolean>;
-  hide$: Observable<boolean>;
-  showReload$: Observable<boolean> = of(true);
+
+  show$: Observable<boolean> = this.todosSource$.pipe(
+    skip(1),
+    map(() => true)
+  );
+  hide$: Observable<boolean> = this.update$$.pipe(map(() => false));
+
+  showReload$: Observable<boolean> = merge(this.hide$, this.show$);
 
   constructor(private todosService: TodoService) {}
 
