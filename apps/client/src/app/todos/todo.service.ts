@@ -1,11 +1,14 @@
 import { HttpClient } from '@angular/common/http';
+import { TypeofExpr } from '@angular/compiler';
 import { Injectable } from '@angular/core';
-import { Observable, timer } from 'rxjs';
+import { Observable, of, timer } from 'rxjs';
 import {
+  catchError,
   concatMap,
   exhaustMap,
   map,
   mergeMap,
+  retry,
   share,
   shareReplay,
   switchMap,
@@ -19,6 +22,7 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
+  private defaultValue: Todo[] = [];
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
@@ -29,7 +33,12 @@ export class TodoService {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
     return timer(1000, 3000).pipe(
       switchMap(() =>
-        this.query().pipe(tap({ error: () => this.toolbelt.offerHardReload() }))
+        this.query().pipe(
+          retry({ count: 2 }),
+          tap((value) => (this.defaultValue = value)),
+          catchError(() => of(this.defaultValue)),
+          tap({ error: () => this.toolbelt.offerHardReload() })
+        )
       ),
       shareReplay()
     );
