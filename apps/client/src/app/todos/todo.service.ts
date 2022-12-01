@@ -5,6 +5,7 @@ import { Observable, of, timer } from 'rxjs';
 import {
   catchError,
   concatMap,
+  delay,
   exhaustMap,
   map,
   mergeMap,
@@ -34,7 +35,8 @@ export class TodoService {
     return timer(1000, 3000).pipe(
       switchMap(() =>
         this.query().pipe(
-          retry({ count: 2 }),
+          retry({ count: 2, delay: 600 }),
+          // retry({ count: 2 }),
           tap((value) => (this.defaultValue = value)),
           catchError(() => of(this.defaultValue)),
           tap({ error: () => this.toolbelt.offerHardReload() })
