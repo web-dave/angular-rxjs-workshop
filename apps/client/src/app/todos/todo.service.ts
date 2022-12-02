@@ -53,6 +53,7 @@ export class TodoService {
     //   shareReplay()
     // );
     return this.settings.settings$.pipe(
+      tap((data) => console.log('settings:', data)),
       switchMap((options) =>
         options.isPollingEnabled
           ? timer(1000, options.pollingInterval)
