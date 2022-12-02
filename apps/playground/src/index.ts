@@ -1,16 +1,15 @@
 import { Observable, timer } from 'rxjs';
 
 const myObservable = {
-  observer: null,
+  observer: [],
   subscribe: function (o) {
-    myObservable.observer = o;
-
-    // producer
-    setInterval(() => {
-      myObservable.observer.next(1);
-    }, 1500);
-  }
+    myObservable.observer.push(o);
+  },
+  next: (v) => myObservable.observer.forEach((o) => o.next(v))
 };
+
+// proucer
+myObservable.next('Hallo');
 
 // myObservable.subscribe({ next: (i) => console.log(i) });
 
