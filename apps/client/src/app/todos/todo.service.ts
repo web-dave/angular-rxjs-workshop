@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { TypeofExpr } from '@angular/compiler';
 import { Injectable } from '@angular/core';
-import { Observable, of, timer } from 'rxjs';
+import { iif, Observable, of, timer } from 'rxjs';
 import {
   catchError,
   concatMap,
@@ -31,8 +31,33 @@ export class TodoService {
   ) {}
 
   loadFrequently() {
-    // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return timer(1000, 3000).pipe(
+    // const myRequest = this.query().pipe(
+    //   retry({ count: 2, delay: 600 }),
+    //   // retry({ count: 2 }),
+    //   tap((value) => (this.defaultValue = value)),
+    //   catchError(() => of(this.defaultValue)),
+    //   tap({ error: () => this.toolbelt.offerHardReload() })
+    // );
+
+    // // TODO: Introduce error handled, configured, recurring, all-mighty stream
+    // return this.settings.settings$.pipe(
+    //   switchMap((options) => {
+    //     if (options.isPollingEnabled) {
+    //       return timer(1000, options.pollingInterval).pipe(
+    //         switchMap(() => myRequest)
+    //       );
+    //     } else {
+    //       return myRequest;
+    //     }
+    //   }),
+    //   shareReplay()
+    // );
+    return this.settings.settings$.pipe(
+      switchMap((options) =>
+        options.isPollingEnabled
+          ? timer(1000, options.pollingInterval)
+          : timer(1000)
+      ),
       switchMap(() =>
         this.query().pipe(
           retry({ count: 2, delay: 600 }),
@@ -44,6 +69,41 @@ export class TodoService {
       ),
       shareReplay()
     );
+    // return this.query().pipe(
+    //   tap({ error: () => this.toolbelt.offerHardReload() }),
+    //   shareReplay()
+    // );
+
+    // return this.settings.settings$.pipe(
+    //   switchMap((options) =>
+    //     options.isPollingEnabled ? timer(1000, options.pollingInterval) : of(1)
+    //   ),
+
+    //   switchMap(() =>
+    //     this.query().pipe(
+    //       retry({ count: 2, delay: 600 }),
+    //       // retry({ count: 2 }),
+    //       tap((value) => (this.defaultValue = value)),
+    //       catchError(() => of(this.defaultValue)),
+    //       tap({ error: () => this.toolbelt.offerHardReload() })
+    //     )
+    //   ),
+    //   shareReplay()
+    // );
+
+    // return timer(1000, 3000).pipe(
+    //   switchMap(() =>
+    //     this.query().pipe(
+    //       retry({ count: 2, delay: 600 }),
+    //       // retry({ count: 2 }),
+    //       tap((value) => (this.defaultValue = value)),
+    //       catchError(() => of(this.defaultValue)),
+    //       tap({ error: () => this.toolbelt.offerHardReload() })
+    //     )
+    //   ),
+    //   shareReplay()
+    // );
+
     // return this.query().pipe(
     //   tap({ error: () => this.toolbelt.offerHardReload() }),
     //   shareReplay()

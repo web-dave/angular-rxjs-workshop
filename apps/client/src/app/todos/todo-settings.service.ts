@@ -1,21 +1,24 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { scan, shareReplay } from 'rxjs/operators';
 
 export interface TodoSettingsOptions {
   isPollingEnabled: boolean;
   pollingInterval: number;
 }
+const TodoSettingsDefaultOptions = {
+  isPollingEnabled: true,
+  pollingInterval: 5000
+};
 
 @Injectable()
 export class TodoSettings {
-  private settings$$ = new BehaviorSubject<Partial<TodoSettingsOptions>>({
-    isPollingEnabled: true,
-    pollingInterval: 5000
-  });
+  private settings$$ = new BehaviorSubject<Partial<TodoSettingsOptions>>(
+    TodoSettingsDefaultOptions
+  );
 
-  settings$ = this.settings$$.pipe(
-    scan((prev, next) => ({ ...prev, ...next })),
+  settings$: Observable<TodoSettingsOptions> = this.settings$$.pipe(
+    scan((prev, next) => ({ ...prev, ...next }), TodoSettingsDefaultOptions),
     shareReplay(1)
   );
 
