@@ -1,13 +1,28 @@
 import { Observable, Observer } from 'rxjs';
 
+const myO$ = {
+  subscribe: (observer) => {
+    let i = 0;
+    setInterval(() => {
+      observer.next(i);
+      i++;
+    }, 1000);
+  }
+};
+
 const myObs$ = new Observable((observer) => {
-  observer.next(1);
-  observer.next(2);
-  observer.next(3);
-  observer.next(4);
-  observer.complete();
-  // observer.error(new Error('Ouch!'));
-  observer.next(5);
+  let i = 0;
+  setInterval(() => {
+    observer.next(i);
+    i++;
+  }, 1000);
+  // observer.next(1);
+  // observer.next(2);
+  // observer.next(3);
+  // observer.next(4);
+  // observer.complete();
+  // // observer.error(new Error('Ouch!'));
+  // observer.next(5);
 });
 
 const myObserver: Observer<number> = {
@@ -16,4 +31,4 @@ const myObserver: Observer<number> = {
   complete: () => console.info('Done')
 };
 
-myObs$.subscribe(myObserver);
+myO$.subscribe(myObserver);
