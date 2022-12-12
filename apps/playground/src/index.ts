@@ -11,11 +11,22 @@ const myO$ = {
 };
 
 const myObs$ = new Observable((observer) => {
+  // const int = setTimeout(() => {
+  //   console.log('Produce', 8000);
+  //   observer.next(8000);
+  // }, 4000);
+
   let i = 0;
-  setInterval(() => {
+  const int = setInterval(() => {
     observer.next(i);
+    console.log('Produce', i);
     i++;
   }, 1000);
+  return function unsubscribe() {
+    clearInterval(int);
+    // clearTimeout(int);
+    // observer.complete();
+  };
   // observer.next(1);
   // observer.next(2);
   // observer.next(3);
@@ -31,4 +42,8 @@ const myObserver: Observer<number> = {
   complete: () => console.info('Done')
 };
 
-myO$.subscribe(myObserver);
+const mySub = myObs$.subscribe(myObserver);
+
+setTimeout(() => {
+  mySub.unsubscribe();
+}, 3000);
