@@ -24,9 +24,13 @@ export class TodoService {
   }
 
   // TODO: Fix the return type of this method
-  private query(): Observable<any> {
-    return this.http.get<TodoApi[]>(`${todosUrl}`);
-    // TODO: Apply mapping to fix display of tasks
+  private query(): Observable<Todo[]> {
+    return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
+      map((data: TodoApi[]) =>
+        // TODO: Apply mapping to fix display of tasks
+        data.map((value) => this.toolbelt.toTodo(value))
+      )
+    );
   }
 
   create(todo: Todo): Observable<TodoApi> {
