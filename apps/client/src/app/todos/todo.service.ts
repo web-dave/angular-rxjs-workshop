@@ -4,6 +4,7 @@ import { interval, Observable, of, timer } from 'rxjs';
 import {
   catchError,
   concatMap,
+  delay,
   exhaustMap,
   map,
   mergeMap,
@@ -33,13 +34,18 @@ export class TodoService {
       exhaustMap((i) => this.query().pipe()),
       retry({
         count: 2,
-        resetOnSuccess: true
+        resetOnSuccess: true,
+        delay: () => this.logError('retry delay') //waiting for logError
       }),
       tap((data) => (this.lastData = data)),
-      tap({ error: () => this.toolbelt.offerHardReload() }),
+      // tap({ error: () => this.toolbelt.offerHardReload() }),
       catchError(() => of(this.lastData)),
       shareReplay()
     );
+  }
+
+  private logError(err: string) {
+    return of(err).pipe(delay(3000));
   }
 
   // TODO: Fix the return type of this method
