@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   first,
   map,
@@ -6,7 +6,11 @@ import {
   Observable,
   of,
   shareReplay,
+  skip,
   Subject,
+  take,
+  takeUntil,
+  takeWhile,
   tap,
   withLatestFrom
 } from 'rxjs';
@@ -17,18 +21,32 @@ import { TodoService } from './todo.service';
   selector: 'dos-todos',
   templateUrl: './todos.component.html'
 })
-export class TodosComponent implements OnInit {
+export class TodosComponent implements OnInit, OnDestroy {
   todos$: Observable<Todo[]>;
   todosSource$ = this.todosService.loadFrequently();
   todosInitial$: Observable<Todo[]> = this.todosSource$.pipe(first());
   todosMostRecent$: Observable<Todo[]>;
 
   update$$ = new Subject<'update'>();
-  show$: Observable<boolean>;
-  hide$: Observable<boolean>;
-  showReload$: Observable<boolean> = of(true);
+
+  show$: Observable<boolean> = this.todosSource$.pipe(
+    skip(1),
+    map(() => true)
+  );
+
+  hide$: Observable<boolean> = this.update$$.pipe(map(() => false));
+
+  showReload$: Observable<boolean> = merge(this.show$, this.hide$);
+
+  foo = 0;
+
+  terminator$$ = new Subject<void>();
 
   constructor(private todosService: TodoService) {}
+  ngOnDestroy(): void {
+    this.foo = 1;
+    this.terminator$$.next();
+  }
 
   ngOnInit(): void {
     // TODO: Control update of todos in App (back pressure)
@@ -43,6 +61,8 @@ export class TodosComponent implements OnInit {
     this.todos$ = merge(this.todosInitial$, this.todosMostRecent$);
 
     // TODO: Control display of refresh button
+
+    this.todosSource$.pipe(takeUntil(this.terminator$$)).subscribe();
   }
 
   completeOrIncompleteTodo(todoForUpdate: Todo) {
@@ -55,4 +75,10 @@ export class TodosComponent implements OnInit {
      */
     this.todosService.completeOrIncomplete(todoForUpdate).subscribe();
   }
+
+  // r(){
+  //   console.log([1,6,7].reduce((prev: number,curr: number)=>{
+  //     return prev+curr
+  //   }, 100))
+  // }
 }

@@ -29,9 +29,15 @@ export class TodoService {
   ) {}
 
   loadFrequently(): Observable<Todo[]> {
-    // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return timer(10, 1000).pipe(
-      exhaustMap((i) => this.query().pipe()),
+    return this.settings.settings$.pipe(
+      tap((data) => console.log(data)),
+      // Wichtig!! Muss ein switchMap sein, da dieses den vorherigen Timer cancelt
+      switchMap((option) => {
+        return option.isPollingEnabled
+          ? timer(10, option.pollingInterval)
+          : timer(10);
+      }),
+      exhaustMap((i) => this.query()),
       retry({
         count: 2,
         resetOnSuccess: true,
@@ -42,6 +48,19 @@ export class TodoService {
       catchError(() => of(this.lastData)),
       shareReplay()
     );
+    // TODO: Introduce error handled, configured, recurring, all-mighty stream
+    // return timer(10, 1000).pipe(
+    //   exhaustMap((i) => this.query().pipe()),
+    //   retry({
+    //     count: 2,
+    //     resetOnSuccess: true,
+    //     delay: () => this.logError('retry delay') //waiting for logError
+    //   }),
+    //   tap((data) => (this.lastData = data)),
+    //   // tap({ error: () => this.toolbelt.offerHardReload() }),
+    //   catchError(() => of(this.lastData)),
+    //   shareReplay()
+    // );
   }
 
   private logError(err: string) {
