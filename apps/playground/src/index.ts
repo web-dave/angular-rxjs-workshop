@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 
-const myObserveable = new Observable(function subscribe(observer) {
+const _myObserveable = new Observable(function subscribe(observer) {
   const int = setInterval(() => {
     if (!subscription.closed) {
       observer.next(1);
@@ -18,7 +18,7 @@ const myObserveable = new Observable(function subscribe(observer) {
   //   clearInterval(int);
   // };
 });
-
+const myObserveable = timer(10, 1000);
 const subscription = myObserveable.subscribe({
   next: (n) => console.log(n),
   error: (err) => console.error(err),
