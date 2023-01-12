@@ -1,12 +1,22 @@
 import { Observable } from 'rxjs';
 
 const myObserveable = new Observable(function subscribe(observer) {
-  observer.next(1);
-  observer.next(2);
-  observer.next(3);
+  const int = setInterval(() => {
+    if (!subscription.closed) {
+      observer.next(1);
+      console.warn('Achtung');
+    } else {
+      clearInterval(int);
+    }
+  }, 1000);
+  // observer.next(2);
+  // observer.next(3);
   // observer.complete();
-  observer.error('Ouch!');
-  observer.next(4);
+  // observer.error('Ouch!');
+  // observer.next(4);
+  // return function unsubscribe() {
+  //   clearInterval(int);
+  // };
 });
 
 const subscription = myObserveable.subscribe({
@@ -14,6 +24,8 @@ const subscription = myObserveable.subscribe({
   error: (err) => console.error(err),
   complete: () => console.info('Complete!')
 });
+
+setTimeout(() => subscription.unsubscribe(), 3000);
 
 /*
 const myObs = {
