@@ -18,7 +18,9 @@ const _myObserveable = new Observable(function subscribe(observer) {
   //   clearInterval(int);
   // };
 });
+
 const myObserveable = timer(10, 1000);
+
 const subscription = myObserveable.subscribe({
   next: (n) => console.log(n),
   error: (err) => console.error(err),
