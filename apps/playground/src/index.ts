@@ -1,4 +1,4 @@
-import { Observable, timer } from 'rxjs';
+import { Observable, shareReplay, timer } from 'rxjs';
 
 const _myObserveable = new Observable(function subscribe(observer) {
   const int = setInterval(() => {
@@ -19,16 +19,35 @@ const _myObserveable = new Observable(function subscribe(observer) {
   // };
 });
 
-const myObserveable = timer(10, 1000);
+const myObserveable = timer(10, 1000).pipe(
+  shareReplay({ refCount: true, bufferSize: 1 })
+);
 
 const subscription = myObserveable.subscribe({
-  next: (n) => console.log(n),
+  next: (n) => console.log('A', n),
   error: (err) => console.error(err),
   complete: () => console.info('Complete!')
 });
-
-setTimeout(() => subscription.unsubscribe(), 3000);
-
+let sub2;
+setTimeout(
+  () =>
+    subscription.add(
+      myObserveable.subscribe({
+        next: (n) => console.log('B', n),
+        error: (err) => console.error(err),
+        complete: () => console.info('Complete!')
+      })
+    ),
+  3000
+);
+setTimeout(() => {
+  subscription.unsubscribe();
+  myObserveable.subscribe({
+    next: (n) => console.log('C', n),
+    error: (err) => console.error(err),
+    complete: () => console.info('Complete!')
+  });
+}, 7000);
 /*
 const myObs = {
   observer: null,
