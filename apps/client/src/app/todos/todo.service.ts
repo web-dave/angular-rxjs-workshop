@@ -37,18 +37,7 @@ export class TodoService {
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
     return timer(10, 1000).pipe(
-      exhaustMap(() =>
-        this.query()
-          .pipe
-          // retry({ count: 2, delay: 2000, resetOnSuccess: false })
-          ()
-      ),
-      catchError((err) => {
-        console.log('====>', err);
-        // this.toolbelt.offerHardReload();
-        return throwError(() => new Error(err.message));
-        // return of([])
-      }),
+      exhaustMap(() => this.query()),
       shareReplay(),
       tap({
         error: (e) => {
@@ -68,7 +57,13 @@ export class TodoService {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
       tap((data) => console.log(data[0])),
       map((data) => data.map((elem) => this.toolbelt.toTodo(elem))),
-      tap(console.log)
+      tap(console.log),
+      retry({ count: 2, delay: 200, resetOnSuccess: false }),
+      catchError((err) => {
+        console.log('====>', err);
+        return throwError(() => new Error(err.message));
+        // return of([])
+      })
     );
     // TODO: Apply mapping to fix display of tasks
   }
