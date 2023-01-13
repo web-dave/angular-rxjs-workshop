@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError, timer } from 'rxjs';
+import { combineLatest, Observable, of, throwError, timer } from 'rxjs';
 import {
   map,
   shareReplay,
@@ -61,8 +61,8 @@ export class TodoService {
       retry({ count: 2, delay: 200, resetOnSuccess: false }),
       catchError((err) => {
         console.log('====>', err);
-        return throwError(() => new Error(err.message));
-        // return of([])
+        // return throwError(() => new Error(err.message));
+        return of([]);
       })
     );
     // TODO: Apply mapping to fix display of tasks
