@@ -7,6 +7,7 @@ import {
   of,
   skip,
   Subject,
+  tap,
   withLatestFrom
 } from 'rxjs';
 import { Todo } from './models';
@@ -25,6 +26,9 @@ export class TodosComponent implements OnInit {
   update$$ = new Subject<void>();
   show$: Observable<boolean>;
   hide$: Observable<boolean>;
+  show$$ = new Subject<boolean>();
+  hide$$ = new Subject<boolean>();
+  showReload$$ = new Subject<boolean>();
   showReload$: Observable<boolean> = of(true);
 
   constructor(private todosService: TodoService) {}
@@ -38,7 +42,13 @@ export class TodosComponent implements OnInit {
     //   map((data: [triggerData,ApiData] ) => data[1])
     // )
     this.todosMostRecent$ = this.update$$.pipe(
-      withLatestFrom(this.todosSource$.pipe(skip(1))),
+      withLatestFrom(
+        this.todosSource$.pipe(
+          skip(1),
+          tap(() => this.showReload$$.next(true))
+        )
+      ),
+      tap(() => this.showReload$$.next(false)),
       // map(([trigger, apiData]) => apiData)
       map((data) => data[1])
     );
@@ -46,6 +56,14 @@ export class TodosComponent implements OnInit {
     this.todos$ = merge(this.todosInitial$, this.todosMostRecent$);
 
     // TODO: Control display of refresh button
+
+    this.show$ = this.todosSource$.pipe(
+      skip(1),
+      map(() => true)
+    );
+    this.hide$ = this.update$$.pipe(map(() => false));
+
+    this.showReload$ = merge(this.show$$, this.hide$$);
   }
 
   completeOrIncompleteTodo(todoForUpdate: Todo) {

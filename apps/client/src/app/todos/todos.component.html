@@ -1,6 +1,6 @@
 <dos-todo-navigation></dos-todo-navigation>
 <dos-todo-updater
-  [isShown]="showReload$ | async"
+  [isShown]="showReload$$ | async"
   (reload)="update$$.next()"
 ></dos-todo-updater>
 <main class="todo__app">
