@@ -12,6 +12,7 @@ import {
 } from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
+import { WebSocketSubject } from 'rxjs/webSocket';
 
 @Component({
   selector: 'dos-todos',
@@ -34,9 +35,13 @@ export class TodosComponent implements OnInit {
   constructor(private todosService: TodoService) {}
 
   ngOnInit(): void {
+    // const ws = new WebSocketSubject(
+    //   'wss://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self'
+    // );
+    // ws.subscribe((data) => console.table(data));
+
     // TODO: Control update of todos in App (back pressure)
     this.todosInitial$ = this.todosSource$.pipe(first());
-
     // trigger$.pipe(
     //   withLatestFrom(api$),
     //   map((data: [triggerData,ApiData] ) => data[1])
