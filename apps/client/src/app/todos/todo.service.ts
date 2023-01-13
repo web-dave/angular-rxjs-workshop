@@ -55,9 +55,9 @@ export class TodoService {
   // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
-      tap((data) => console.log(data[0])),
+      // tap((data) => console.log(data[0])),
       map((data) => data.map((elem) => this.toolbelt.toTodo(elem))),
-      tap(console.log),
+      // tap(console.log),
       retry({ count: 2, delay: 200, resetOnSuccess: false }),
       catchError((err) => {
         console.log('====>', err);
