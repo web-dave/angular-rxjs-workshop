@@ -20,6 +20,7 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
+  fallbackData: Todo[] = [];
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
@@ -57,12 +58,12 @@ export class TodoService {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
       // tap((data) => console.log(data[0])),
       map((data) => data.map((elem) => this.toolbelt.toTodo(elem))),
-      // tap(console.log),
+      tap((data) => (this.fallbackData = data)),
       retry({ count: 2, delay: 200, resetOnSuccess: false }),
       catchError((err) => {
         console.log('====>', err);
         // return throwError(() => new Error(err.message));
-        return of([]);
+        return of(this.fallbackData);
       })
     );
     // TODO: Apply mapping to fix display of tasks
