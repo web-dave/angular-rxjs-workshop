@@ -1,16 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, throwError, timer } from 'rxjs';
+import { EMPTY, iif, interval, Observable, of, timer } from 'rxjs';
 import {
   map,
   shareReplay,
   tap,
-  mergeMap,
-  concatMap,
   exhaustMap,
-  switchMap,
   retry,
-  catchError
+  catchError,
+  switchMap
 } from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
@@ -27,17 +25,32 @@ export class TodoService {
     private settings: TodoSettings
   ) {}
 
-  // myOp = (obs: Observable<any>): Observable<any> => {
-  //   return new Observable(Data);
-  // };
-  // tap = (obs: Observable<any>): Observable<any> => {
-  //   //
-  //   return obs;
-  // };
-
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return timer(10, 1000).pipe(
+
+    // const conditionialInterval_$ = this.settings.settings$.pipe(
+    //   switchMap((settings) => of(settings.isPollingEnabled))
+    // );
+    const conditionialInterval$ = this.settings.settings$.pipe(
+      switchMap((settings) => {
+        if (!settings.isPollingEnabled) {
+          return of(0);
+        } else {
+          return timer(10, settings.pollingInterval);
+        }
+      })
+    );
+    // const conditionialInterval__$ = this.settings.settings$.pipe(
+    //   switchMap((settings) =>
+    //     iif(
+    //       () => settings.isPollingEnabled,
+    //       interval(settings.pollingInterval),
+    //       EMPTY
+    //     )
+    //   )
+    // );
+
+    return conditionialInterval$.pipe(
       exhaustMap(() => this.query()),
       shareReplay(),
       tap({

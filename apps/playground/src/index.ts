@@ -64,3 +64,12 @@ const sub = myObs.subscribe({
 });
 setTimeout(() => sub(), 5000);
 */
+
+// Operators
+// myOperator = (obs: Observable<any>): Observable<any> => {
+//   return new Observable(Data);
+// };
+// tap = (obs: Observable<any>): Observable<any> => {
+//   //
+//   return obs;
+// };
