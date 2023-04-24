@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import { fromEvent, map, mergeMap, Observable, of, Subject, tap } from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
 
@@ -25,6 +25,18 @@ export class TodosComponent implements OnInit {
     this.todos$ = this.todosSource$;
 
     // TODO: Control display of refresh button
+    setTimeout(() => {
+      const input = document.getElementsByClassName(
+        'myinput'
+      )[0] as HTMLInputElement;
+      fromEvent(input, 'input')
+        .pipe(
+          map((e) => (e as any).data),
+          tap((data) => console.log('input', data)),
+          mergeMap((data) => this.todosService.getTodo(data))
+        )
+        .subscribe();
+    }, 2000);
   }
 
   completeOrIncompleteTodo(todoForUpdate: Todo) {
