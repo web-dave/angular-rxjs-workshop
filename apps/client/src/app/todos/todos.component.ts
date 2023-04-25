@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {
+  filter,
   fromEvent,
   map,
+  merge,
   mergeMap,
   Observable,
   of,
@@ -22,10 +24,14 @@ export class TodosComponent implements OnInit {
   todosInitial$: Observable<Todo[]>;
   todosMostRecent$: Observable<Todo[]>;
 
-  update$$ = new Subject();
-  show$: Observable<boolean>;
-  hide$: Observable<boolean>;
-  showReload$: Observable<boolean> = of(true);
+  update$$ = new Subject<void>();
+  show$: Observable<boolean> = this.todosSource$.pipe(
+    // filter((data) => data.length >= 1),
+    map((data) => (data.length >= 1 ? true : false))
+    // map(() => true)
+  );
+  hide$: Observable<boolean> = this.update$$.pipe(map(() => false));
+  showReload$: Observable<boolean> = merge(this.hide$, this.show$);
 
   constructor(private todosService: TodoService) {}
 

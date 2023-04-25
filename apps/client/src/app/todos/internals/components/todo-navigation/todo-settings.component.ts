@@ -35,14 +35,12 @@ import { Observable } from 'rxjs';
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-dialog-close="" class="todo__button--primary">
-        CLOSE
-      </button>
+      <button mat-dialog-close="" class="todo__button--primary">CLOSE</button>
     </mat-dialog-actions>
   `
 })
 export class TodoSettingsComponent {
-  settings$: Observable<Partial<TodoSettingsOptions>>;
+  settings$: Observable<TodoSettingsOptions>;
 
   constructor(private todoSettings: TodoSettings) {
     this.settings$ = todoSettings.settings$;

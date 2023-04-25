@@ -8,6 +8,7 @@ import {
   mergeMap,
   retry,
   shareReplay,
+  switchMap,
   tap
 } from 'rxjs/operators';
 import { Toolbelt } from './internals';
@@ -30,16 +31,27 @@ export class TodoService {
   loadFrequently(): Observable<Todo[]> {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
 
-    return interval(5000).pipe(
+    const pollingInterval$ = this.settings.settings$.pipe(
+      tap((data) => console.log(data)),
+      switchMap((data) => {
+        if (data.isPollingEnabled) {
+          return interval(data.pollingInterval);
+        } else {
+          return of(0);
+        }
+      })
+    );
+
+    return pollingInterval$.pipe(
       exhaustMap(() =>
         this.query().pipe(
-          retry({ count: 2, delay: 2000 }),
+          // retry({ count: 2, delay: 2000 }),
           // retry({ count: 2, delay: () => this.onLine$ }),
           catchError(() => of([]))
         )
       ), //('',200)=>this.onLine$
       tap({ error: () => this.toolbelt.offerHardReload() }),
-      tap((data) => console.log(data)),
+      // tap((data) => console.log(data)),
       shareReplay(1)
     );
   }
@@ -47,9 +59,9 @@ export class TodoService {
   // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
-      tap((data) => console.log(data[0])),
-      map((data) => data.map((todo) => this.toolbelt.toTodo(todo))),
-      tap((data) => console.log(data[0]))
+      // tap((data) => console.log(data[0])),
+      map((data) => data.map((todo) => this.toolbelt.toTodo(todo)))
+      // tap((data) => console.log(data[0]))
     );
     // TODO: Apply mapping to fix display of tasks
   }
