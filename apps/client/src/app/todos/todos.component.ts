@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DoCheck, OnInit } from '@angular/core';
 import {
   filter,
   fromEvent,
@@ -18,7 +18,7 @@ import { TodoService } from './todo.service';
   selector: 'dos-todos',
   templateUrl: './todos.component.html'
 })
-export class TodosComponent implements OnInit {
+export class TodosComponent implements OnInit, DoCheck {
   todos$: Observable<Todo[]>;
   todosSource$ = this.todosService.loadFrequently();
   todosInitial$: Observable<Todo[]>;
@@ -68,5 +68,8 @@ export class TodosComponent implements OnInit {
      * We just want to focus you on RxJS.
      */
     this.todosService.completeOrIncomplete(todoForUpdate).subscribe();
+  }
+  ngDoCheck(): void {
+    console.log('DoCheck TodosComponent');
   }
 }

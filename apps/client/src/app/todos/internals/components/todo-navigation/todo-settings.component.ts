@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Todo } from '../../../models';
 import {
   TodoSettings,
@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 
 @Component({
   selector: 'dos-todo-settings',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <h2 mat-dialog-title>Settings</h2>
     <mat-dialog-content *ngIf="settings$ | async as settings">
