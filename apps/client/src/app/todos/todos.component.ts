@@ -1,5 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { fromEvent, map, mergeMap, Observable, of, Subject, tap } from 'rxjs';
+import {
+  fromEvent,
+  map,
+  mergeMap,
+  Observable,
+  of,
+  Subject,
+  tap,
+  withLatestFrom
+} from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
 
@@ -22,21 +31,26 @@ export class TodosComponent implements OnInit {
 
   ngOnInit(): void {
     // TODO: Control update of todos in App (back pressure)
-    this.todos$ = this.todosSource$;
+    this.todos$ = this.update$$.pipe(
+      withLatestFrom(this.todosSource$),
+      map((data) => data[1])
+    );
+
+    // this.todos$ = this.todosSource$;
 
     // TODO: Control display of refresh button
-    setTimeout(() => {
-      const input = document.getElementsByClassName(
-        'myinput'
-      )[0] as HTMLInputElement;
-      fromEvent(input, 'input')
-        .pipe(
-          map((e) => (e as any).data),
-          tap((data) => console.log('input', data)),
-          mergeMap((data) => this.todosService.getTodo(data))
-        )
-        .subscribe();
-    }, 2000);
+    // setTimeout(() => {
+    //   const input = document.getElementsByClassName(
+    //     'myinput'
+    //   )[0] as HTMLInputElement;
+    //   fromEvent(input, 'input')
+    //     .pipe(
+    //       map((e) => (e as any).data),
+    //       tap((data) => console.log('input', data)),
+    //       mergeMap((data) => this.todosService.getTodo(data))
+    //     )
+    //     .subscribe();
+    // }, 2000);
   }
 
   completeOrIncompleteTodo(todoForUpdate: Todo) {

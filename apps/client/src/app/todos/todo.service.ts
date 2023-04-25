@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { fromEvent, interval, Observable } from 'rxjs';
+import { fromEvent, interval, Observable, of } from 'rxjs';
 import {
+  catchError,
   exhaustMap,
   map,
   mergeMap,
@@ -30,7 +31,12 @@ export class TodoService {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
 
     return interval(5000).pipe(
-      exhaustMap(() => this.query().pipe(retry({ count: 2, delay: 2000 }))), //('',200)=>this.onLine$
+      exhaustMap(() =>
+        this.query().pipe(
+          retry({ count: 2, delay: 2000 }),
+          catchError(() => of([]))
+        )
+      ), //('',200)=>this.onLine$
       tap({ error: () => this.toolbelt.offerHardReload() }),
       tap((data) => console.log(data)),
       shareReplay(1)
