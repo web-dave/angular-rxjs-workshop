@@ -34,6 +34,7 @@ export class TodoService {
       exhaustMap(() =>
         this.query().pipe(
           retry({ count: 2, delay: 2000 }),
+          // retry({ count: 2, delay: () => this.onLine$ }),
           catchError(() => of([]))
         )
       ), //('',200)=>this.onLine$
