@@ -1,5 +1,4 @@
-import { Observable, Subscriber } from 'rxjs';
-import { threadId } from 'worker_threads';
+import { Observable } from 'rxjs';
 
 const myObservable = {
   observer: null,
@@ -15,11 +14,14 @@ const myObservable = {
 };
 
 const numbers$ = new Observable(function subscribe(observer) {
-  setInterval(() => {
+  const interval = setInterval(() => {
     console.log('Interval');
     observer.next(1);
   }, 1000);
-  observer.complete();
+  return function unsubscribe() {
+    clearInterval(interval);
+  };
+  // observer.complete();
   // observer.next(2);
   // observer.next(3);
   // observer.error('UFF!');
@@ -32,3 +34,7 @@ const sub = numbers$.subscribe({
   error: (err) => console.error('ERROR', err),
   complete: () => console.info('DONE')
 });
+
+setTimeout(() => {
+  sub.unsubscribe();
+}, 2023);
