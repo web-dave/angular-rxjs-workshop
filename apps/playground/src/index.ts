@@ -35,7 +35,7 @@ const numbers$ = new Observable(function subscribe(observer) {
 //   () => console.info('DONE')
 // );
 
-const numbers2$ = timer(300, 1000);
+const numbers2$ = timer(300, 1000).pipe();
 const sub = numbers2$.subscribe({
   next: (data) => console.log('NEXT', data),
   error: (err) => console.error('ERROR', err),
@@ -43,5 +43,10 @@ const sub = numbers2$.subscribe({
 });
 
 setTimeout(() => {
-  sub.unsubscribe();
-}, 4000);
+  // sub.unsubscribe();
+  numbers2$.subscribe({
+    next: (data) => console.log('NEXT !!', data),
+    error: (err) => console.error('ERROR', err),
+    complete: () => console.info('DONE')
+  });
+}, 2000);
