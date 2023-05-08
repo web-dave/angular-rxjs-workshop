@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 
 const myObservable = {
   observer: null,
@@ -29,7 +29,14 @@ const numbers$ = new Observable(function subscribe(observer) {
   // observer.next(5);
 });
 
-const sub = numbers$.subscribe({
+// const sub1 = numbers$.subscribe(
+//   (data) => console.log('NEXT', data),
+//   (err) => console.error('ERROR', err),
+//   () => console.info('DONE')
+// );
+
+const numbers2$ = timer(300, 1000);
+const sub = numbers2$.subscribe({
   next: (data) => console.log('NEXT', data),
   error: (err) => console.error('ERROR', err),
   complete: () => console.info('DONE')
@@ -37,4 +44,4 @@ const sub = numbers$.subscribe({
 
 setTimeout(() => {
   sub.unsubscribe();
-}, 2023);
+}, 4000);
