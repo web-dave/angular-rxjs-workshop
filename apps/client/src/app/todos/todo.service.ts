@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { interval, Observable } from 'rxjs';
+import { interval, Observable, of } from 'rxjs';
 import {
+  catchError,
   delay,
   exhaustMap,
   map,
@@ -37,7 +38,8 @@ export class TodoService {
             count: 3,
             resetOnSuccess: true
           }),
-          tap({ error: () => this.toolbelt.offerHardReload() })
+          // tap({ error: () => this.toolbelt.offerHardReload() })
+          catchError(() => of([]))
         )
       ),
       shareReplay({ refCount: true })

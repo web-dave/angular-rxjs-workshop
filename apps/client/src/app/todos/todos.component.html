@@ -1,4 +1,6 @@
 <dos-todo-navigation></dos-todo-navigation>
+<!-- <button (click)="preshow = !preshow">👁️</button>
+<pre *ngIf="preshow">{{ todospre | json }}</pre> -->
 <dos-todo-updater
   [isShown]="showReload$ | async"
   (reload)="update$$.next()"

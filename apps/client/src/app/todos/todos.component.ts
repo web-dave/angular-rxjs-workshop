@@ -5,8 +5,12 @@ import {
   merge,
   Observable,
   of,
+  tap,
+  skip,
   Subject,
-  withLatestFrom
+  take,
+  withLatestFrom,
+  takeUntil
 } from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
@@ -16,22 +20,34 @@ import { TodoService } from './todo.service';
   templateUrl: './todos.component.html'
 })
 export class TodosComponent implements OnInit {
+  preshow = true;
   update$$ = new Subject();
   todos$: Observable<Todo[]>;
+  todospre: Todo[] = [];
   todosSource$ = this.todosService.loadFrequently();
 
   todosInitial$: Observable<Todo[]> = this.todosSource$.pipe(first());
 
   todosMostRecent$: Observable<Todo[]> = this.update$$.pipe(
-    withLatestFrom(this.todosSource$),
+    withLatestFrom(this.todosSource$.pipe(skip(1))),
     map((data: [unknown, Todo[]]) => data[1])
   );
 
-  show$: Observable<boolean>;
-  hide$: Observable<boolean>;
-  showReload$: Observable<boolean> = of(true);
+  show$: Observable<boolean> = this.todosSource$.pipe(
+    skip(1),
+    map((data) => (data.length >= 1 ? true : false))
+  );
+  hide$: Observable<false> = this.update$$.pipe(map(() => false));
+
+  showReload$: Observable<boolean> = merge(this.hide$, this.show$);
 
   constructor(private todosService: TodoService) {
+    this.todosSource$
+      .pipe(
+        takeUntil(this.update$$),
+        tap(() => console.log('Lade daten'))
+      )
+      .subscribe((data) => (this.todospre = data));
     // setTimeout(() => {
     //   this.todosService
     //     .loadFrequently()
