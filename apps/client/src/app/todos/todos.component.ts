@@ -19,11 +19,11 @@ export class TodosComponent implements OnInit {
   showReload$: Observable<boolean> = of(true);
 
   constructor(private todosService: TodoService) {
-    setTimeout(() => {
-      this.todosService
-        .loadFrequently()
-        .subscribe((data) => console.table(data));
-    }, 1000);
+    // setTimeout(() => {
+    //   this.todosService
+    //     .loadFrequently()
+    //     .subscribe((data) => console.table(data));
+    // }, 1000);
   }
 
   ngOnInit(): void {
