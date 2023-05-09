@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { interval, Observable } from 'rxjs';
 import {
+  delay,
   exhaustMap,
   map,
   mergeMap,
@@ -31,7 +32,11 @@ export class TodoService {
       tap((data) => console.log(data)),
       exhaustMap((b) =>
         this.query().pipe(
-          retry({ delay: 2000, count: 3, resetOnSuccess: true }),
+          retry({
+            delay: 2000,
+            count: 3,
+            resetOnSuccess: true
+          }),
           tap({ error: () => this.toolbelt.offerHardReload() })
         )
       ),
