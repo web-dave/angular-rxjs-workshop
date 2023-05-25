@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 
 // *****************************
 // break down a observable
@@ -11,7 +11,7 @@ const myObservable_ = {
 };
 // *****************************
 
-const myObservable = new Observable(function subscribe(observer) {
+const myObservable__ = new Observable(function subscribe(observer) {
   // -----------
   // Producer
   // observer.next(1);
@@ -31,16 +31,20 @@ const myObservable = new Observable(function subscribe(observer) {
   // -----------
 });
 
+const myObservable = timer(3000, 1000);
+
 const foo = myObservable.subscribe({
   next: (data) => console.log(data)
 });
 
 setTimeout(() => {
   foo.unsubscribe();
-}, 4000);
-// const foo_ = myObservable.subscribe({
-//   next: (data) => console.log(data)
-// });
+}, 7000);
+// setTimeout(() => {
+//   const foo_ = myObservable.subscribe({
+//     next: (data) => console.log(data)
+//   });
+// }, 2000);
 // const foo__ = myObservable.subscribe({
 //   next: (data) => console.log(data)
 // });
