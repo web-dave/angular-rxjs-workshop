@@ -21,10 +21,13 @@ const myObservable = new Observable(function subscribe(observer) {
   // observer.error('Huch!');
   // observer.next(4);
   // -----------
-  setInterval(() => {
+  const int = setInterval(() => {
     console.log('Interval');
     observer.next(1);
   }, 1000);
+  return function unsubscribe() {
+    clearInterval(int);
+  };
   // -----------
 });
 
@@ -32,9 +35,9 @@ const foo = myObservable.subscribe({
   next: (data) => console.log(data)
 });
 
-// setTimeout(() => {
-//   foo.unsubscribe();
-// }, 4000);
+setTimeout(() => {
+  foo.unsubscribe();
+}, 4000);
 // const foo_ = myObservable.subscribe({
 //   next: (data) => console.log(data)
 // });
