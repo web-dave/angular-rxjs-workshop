@@ -14,21 +14,30 @@ const myObservable_ = {
 const myObservable = new Observable(function subscribe(observer) {
   // -----------
   // Producer
-  observer.next(1);
-  observer.next(2);
-  observer.next(3);
-  observer.complete();
-  observer.error('Huch!');
-  observer.next(4);
+  // observer.next(1);
+  // observer.next(2);
+  // observer.next(3);
+  // observer.complete();
+  // observer.error('Huch!');
+  // observer.next(4);
+  // -----------
+  setInterval(() => {
+    console.log('Interval');
+    observer.next(1);
+  }, 1000);
   // -----------
 });
 
 const foo = myObservable.subscribe({
   next: (data) => console.log(data)
 });
-const foo_ = myObservable.subscribe({
-  next: (data) => console.log(data)
-});
-const foo__ = myObservable.subscribe({
-  next: (data) => console.log(data)
-});
+
+// setTimeout(() => {
+//   foo.unsubscribe();
+// }, 4000);
+// const foo_ = myObservable.subscribe({
+//   next: (data) => console.log(data)
+// });
+// const foo__ = myObservable.subscribe({
+//   next: (data) => console.log(data)
+// });
