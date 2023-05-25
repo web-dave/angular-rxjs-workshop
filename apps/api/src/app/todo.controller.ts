@@ -20,7 +20,7 @@ export class TodoController {
   @Get()
   async todos() {
     await this.takeABreak();
-    this.flipCoin();
+    // this.flipCoin();
 
     return this.todosInMemory.getAll();
   }

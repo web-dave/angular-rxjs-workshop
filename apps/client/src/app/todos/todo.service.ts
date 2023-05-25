@@ -1,7 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map, shareReplay, tap } from 'rxjs/operators';
+import { Observable, interval } from 'rxjs';
+import {
+  concatMap,
+  exhaustMap,
+  map,
+  mergeMap,
+  shareReplay,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
 import { TodoSettings } from './todo-settings.service';
@@ -18,7 +26,10 @@ export class TodoService {
 
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return this.query().pipe(
+
+    return interval(1000).pipe(
+      tap((data) => console.log('Ping')),
+      exhaustMap(() => this.query()),
       shareReplay(),
       tap({ error: () => this.toolbelt.offerHardReload() })
     );
@@ -30,7 +41,12 @@ export class TodoService {
       this.http
         .get<TodoApi[]>(`${todosUrl}`)
         // TODO: Apply mapping to fix display of tasks
-        .pipe(map((data) => data.map((t) => this.toolbelt.toTodo(t))))
+        .pipe(
+          map((data) => data.map((t) => this.toolbelt.toTodo(t))),
+          tap((data) => console.log(data)),
+          shareReplay(),
+          tap((data) => console.log(data))
+        )
     );
   }
 
