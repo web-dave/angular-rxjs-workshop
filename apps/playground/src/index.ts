@@ -1,4 +1,4 @@
-import { Observable, timer } from 'rxjs';
+import { Observable, shareReplay, timer } from 'rxjs';
 
 // *****************************
 // break down a observable
@@ -31,20 +31,20 @@ const myObservable__ = new Observable(function subscribe(observer) {
   // -----------
 });
 
-const myObservable = timer(3000, 1000);
+const myObservable = timer(300, 1000).pipe(shareReplay(3));
 
 const foo = myObservable.subscribe({
   next: (data) => console.log(data)
 });
 
-setTimeout(() => {
-  foo.unsubscribe();
-}, 7000);
 // setTimeout(() => {
-//   const foo_ = myObservable.subscribe({
-//     next: (data) => console.log(data)
-//   });
-// }, 2000);
+//   foo.unsubscribe();
+// }, 7000);
+setTimeout(() => {
+  const foo_ = myObservable.subscribe({
+    next: (data) => console.log('NEW', data)
+  });
+}, 5000);
 // const foo__ = myObservable.subscribe({
 //   next: (data) => console.log(data)
 // });
