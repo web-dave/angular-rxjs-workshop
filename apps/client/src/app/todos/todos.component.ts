@@ -5,6 +5,7 @@ import {
   merge,
   Observable,
   of,
+  skip,
   Subject,
   withLatestFrom
 } from 'rxjs';
@@ -25,9 +26,12 @@ export class TodosComponent implements OnInit {
   );
   todos$: Observable<Todo[]>;
 
-  show$: Observable<boolean>;
-  hide$: Observable<boolean>;
-  showReload$: Observable<boolean> = of(true);
+  show$: Observable<boolean> = this.todosSource$.pipe(
+    skip(1),
+    map(() => true)
+  );
+  hide$: Observable<boolean> = this.update$$.pipe(map(() => false));
+  showReload$: Observable<boolean> = merge(this.show$, this.hide$);
 
   constructor(private todosService: TodoService) {}
 
