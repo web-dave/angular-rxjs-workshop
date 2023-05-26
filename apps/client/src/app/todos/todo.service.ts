@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, interval, of } from 'rxjs';
+import { Observable, iif, interval, of } from 'rxjs';
+import { WebSocketSubject } from 'rxjs/webSocket';
 import {
   catchError,
   concatMap,
@@ -20,17 +21,38 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
+  ws: WebSocketSubject<any>;
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
     private settings: TodoSettings
-  ) {}
+  ) {
+    this.ws = new WebSocketSubject('ws://127.0.0.1:60146/');
+
+    setTimeout(() => {
+      this.ws.subscribe((data) => console.log(data));
+      this.ws.next('Hallo Adesso');
+    }, 3000);
+  }
 
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
 
-    return interval(5000).pipe(
-      tap((data) => console.log('Ping')),
+    const myInterval$: Observable<number> = this.settings.settings$.pipe(
+      tap((data) => console.log(data)),
+      // switchMap((data) =>
+      //   iif(() => data.isPollingEnabled, interval(data.pollingInterval), of(0))
+      // )
+      switchMap((data) => {
+        if (data.isPollingEnabled) {
+          return interval(data.pollingInterval);
+        } else {
+          return of(0);
+        }
+      })
+    );
+
+    return myInterval$.pipe(
       exhaustMap(() => this.query()),
       shareReplay()
     );
