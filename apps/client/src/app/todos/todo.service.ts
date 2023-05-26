@@ -1,13 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, iif, interval, of } from 'rxjs';
+import { EMPTY, Observable, interval, of } from 'rxjs';
 import { WebSocketSubject } from 'rxjs/webSocket';
 import {
   catchError,
-  concatMap,
   exhaustMap,
   map,
-  mergeMap,
   retry,
   shareReplay,
   switchMap,
@@ -70,7 +68,7 @@ export class TodoService {
             delay: 300,
             resetOnSuccess: true
           }),
-          catchError((err) => of([])),
+          catchError((err) => EMPTY),
           map((data) => data.map((t) => this.toolbelt.toTodo(t)))
         )
     );
