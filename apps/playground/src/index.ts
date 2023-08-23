@@ -1,5 +1,21 @@
 import { Observable } from 'rxjs';
 
+const obs = {
+  value: 0,
+  observer: (v) => {},
+  subscribe: function (observer) {
+    obs.observer = observer;
+    obs.next(0);
+  },
+  next: function (v) {
+    obs.value = v;
+    obs.observer(obs.value);
+  }
+};
+obs.subscribe((value) => console.log(value));
+
+obs.next(1);
+
 // Create observable
 const helloWorld$ = new Observable(function subscribe(observer) {
   let i = 0;
