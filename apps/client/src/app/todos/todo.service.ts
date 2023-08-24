@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, interval, of } from 'rxjs';
 import {
+  catchError,
   concatMap,
   delay,
   exhaustMap,
@@ -20,6 +21,7 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
+  cache = [];
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
@@ -41,7 +43,9 @@ export class TodoService {
         count: 1,
         delay: (error, retryCount) => of('').pipe(delay(3000))
       }),
-      tap({ error: () => this.toolbelt.offerHardReload() }),
+      catchError(() => of(this.cache)),
+      // tap({ error: () => this.toolbelt.offerHardReload() }),
+      tap((liste) => (this.cache = liste)),
       map((data) => data.map((value) => this.toolbelt.toTodo(value)))
     );
     // TODO: Apply mapping to fix display of tasks
