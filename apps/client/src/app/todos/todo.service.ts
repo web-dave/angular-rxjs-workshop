@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, interval, of } from 'rxjs';
+import { EMPTY, Observable, interval, of } from 'rxjs';
 import {
   catchError,
   concatMap,
@@ -21,7 +21,6 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
-  cache = [];
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
@@ -35,7 +34,6 @@ export class TodoService {
     );
   }
 
-  // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
       tap(console.log),
@@ -43,12 +41,10 @@ export class TodoService {
         count: 1,
         delay: (error, retryCount) => of('').pipe(delay(3000))
       }),
-      catchError(() => of(this.cache)),
+      catchError(() => EMPTY), // sehr cool
       // tap({ error: () => this.toolbelt.offerHardReload() }),
-      tap((liste) => (this.cache = liste)),
       map((data) => data.map((value) => this.toolbelt.toTodo(value)))
     );
-    // TODO: Apply mapping to fix display of tasks
   }
 
   create(todo: Todo): Observable<TodoApi> {
