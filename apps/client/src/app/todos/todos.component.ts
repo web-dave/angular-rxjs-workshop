@@ -23,7 +23,7 @@ export class TodosComponent implements OnInit {
   todosInitial$: Observable<Todo[]> = this.todosSource$.pipe(first());
   todosMostRecent$: Observable<Todo[]>;
 
-  update$$ = new Subject();
+  update$$ = new Subject<void>();
   show$: Observable<boolean> = this.todosSource$.pipe(
     skip(1),
     map(() => true)

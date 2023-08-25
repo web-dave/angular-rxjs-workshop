@@ -28,8 +28,19 @@ export class TodoService {
   ) {}
 
   loadFrequently() {
-    return interval(1500).pipe(
-      concatMap(() => this.query()),
+    const interval$: Observable<number> = this.settings.settings$.pipe(
+      tap((data) => console.log(data)),
+      switchMap((data) => {
+        if (data.isPollingEnabled) {
+          return interval(data.pollingInterval);
+        } else {
+          return of(0);
+        }
+      })
+    );
+
+    return interval$.pipe(
+      exhaustMap(() => this.query()),
       share()
     );
   }
