@@ -16,13 +16,25 @@ _myobs.subscribe({
 });
 
 const numbers$ = new Observable(function subscribe(observer: Observer<any>) {
-  observer.next(1);
-  observer.next(2);
-  observer.error('OH Fuuuuuck!');
-  observer.next(3);
-  observer.next(4);
+  let i = 0;
+  const interval = setInterval(() => {
+    observer.next(i);
+    i++;
+  }, 1000);
+  return function unsubscribe() {
+    clearInterval(interval);
+  };
 });
 
-numbers$.subscribe({
+const sub = numbers$.subscribe({
   next: (data) => console.log(data)
 });
+const sub_ = numbers$.subscribe(
+  (data) => console.log(data),
+  (err) => console.log(err),
+  () => console.log()
+);
+
+setTimeout(() => {
+  sub.unsubscribe();
+}, 4000);
