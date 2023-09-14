@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EMPTY, NEVER, Observable, timer } from 'rxjs';
+import { EMPTY, NEVER, Observable, of, timer } from 'rxjs';
 import {
   catchError,
   concatMap,
@@ -20,6 +20,7 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
+  myCache: Todo[] = [];
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
@@ -37,7 +38,7 @@ export class TodoService {
           }),
           catchError((err) => {
             console.log('==>', err);
-            return EMPTY;
+            return of(this.myCache); //EMPTY;
           })
         )
       ),
@@ -56,7 +57,10 @@ export class TodoService {
       this.http
         .get<TodoApi[]>(`${todosUrl}`)
         // TODO: Apply mapping to fix display of tasks
-        .pipe(map((list) => list.map((t) => this.toolbelt.toTodo(t))))
+        .pipe(
+          map((list) => list.map((t) => this.toolbelt.toTodo(t))),
+          tap((data) => (this.myCache = data))
+        )
     );
   }
 
