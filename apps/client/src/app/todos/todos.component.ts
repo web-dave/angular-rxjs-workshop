@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import { NEVER, Observable, of, Subject } from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
 
@@ -8,7 +8,7 @@ import { TodoService } from './todo.service';
   templateUrl: './todos.component.html'
 })
 export class TodosComponent implements OnInit {
-  todos$: Observable<Todo[]>;
+  todos$: Observable<Todo[]> = NEVER;
   todosSource$ = this.todosService.loadFrequently();
   todosInitial$: Observable<Todo[]>;
   todosMostRecent$: Observable<Todo[]>;
@@ -38,3 +38,12 @@ export class TodosComponent implements OnInit {
     this.todosService.completeOrIncomplete(todoForUpdate).subscribe();
   }
 }
+
+// const _fun = (obs$)=>{
+//   fun()
+//   newObs$
+// }
+// const tap = (obs$)=>{
+//   fun()
+//   obs$
+// }
