@@ -25,16 +25,12 @@ const _numbers$ = new Observable(function subscribe(observer: Observer<any>) {
     clearInterval(interval);
   };
 });
+
 const numbers$ = timer(1500, 500);
 
 const sub = numbers$.subscribe({
   next: (data) => console.log(data)
 });
-// const sub_ = numbers$.subscribe(
-//   (data) => console.log(data),
-//   (err) => console.log(err),
-//   () => console.log()
-// );
 
 setTimeout(() => {
   sub.unsubscribe();
