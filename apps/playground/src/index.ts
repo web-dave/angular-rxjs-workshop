@@ -1,4 +1,10 @@
-import { Observable, Observer, timer } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  Observer,
+  ReplaySubject,
+  timer
+} from 'rxjs';
 
 const _myobs = {
   _observer: null,
@@ -28,10 +34,22 @@ const _numbers$ = new Observable(function subscribe(observer: Observer<any>) {
 
 const numbers$ = timer(1500, 500);
 
-const sub = numbers$.subscribe({
-  next: (data) => console.log(data)
-});
+// const sub = numbers$.subscribe({
+//   next: (data) => console.log(data)
+// });
 
-setTimeout(() => {
-  sub.unsubscribe();
-}, 4000);
+// setTimeout(() => {
+//   sub.unsubscribe();
+// }, 4000);
+
+const bar$$ = new BehaviorSubject(1);
+const foo$$ = new ReplaySubject<number>(1);
+bar$$.next(9873461);
+foo$$.next(9873461);
+
+bar$$.complete();
+foo$$.complete();
+
+bar$$.subscribe({ next: (data) => console.log('BAR', data) });
+
+foo$$.subscribe({ next: (data) => console.log('FOO', data) });
