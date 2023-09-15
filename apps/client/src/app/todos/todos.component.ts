@@ -10,6 +10,7 @@ import {
   Subject,
   withLatestFrom
 } from 'rxjs';
+import { WebSocketSubject } from 'rxjs/webSocket';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
 
@@ -32,6 +33,7 @@ export class TodosComponent implements OnInit {
   constructor(private todosService: TodoService) {}
 
   ngOnInit(): void {
+    // const ws = new WebSocketSubject('wss://')
     // TODO: Control update of todos in App (back pressure)
     const updatedTodos$ = this.update$$.pipe(
       withLatestFrom(this.todosMostRecent$),

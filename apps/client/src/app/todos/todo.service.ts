@@ -14,7 +14,7 @@ import {
 } from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
-import { TodoSettings } from './todo-settings.service';
+import { TodoSettings, TodoSettingsOptions } from './todo-settings.service';
 
 const todosUrl = 'http://localhost:3333/api';
 
@@ -28,7 +28,16 @@ export class TodoService {
   ) {}
 
   loadFrequently() {
-    return timer(1000, 2000).pipe(
+    return this.settings.settings$.pipe(
+      tap((data) => console.log('settings', data)),
+      switchMap((data) => {
+        if (data.isPollingEnabled) {
+          return timer(500, data.pollingInterval);
+        } else {
+          return of(0);
+        }
+      }),
+      tap((data) => console.log('PING', data)),
       exhaustMap(() =>
         this.query().pipe(
           retry({
