@@ -38,7 +38,7 @@ export class TodoService {
           }),
           catchError((err) => {
             console.log('==>', err);
-            return of(this.myCache); //EMPTY;
+            return EMPTY;
           })
         )
       ),
