@@ -1,4 +1,4 @@
-import { Observable, PartialObserver } from 'rxjs';
+import { Observable, PartialObserver, timer } from 'rxjs';
 console.log('Hallo');
 const myObs = new Observable(function (observer: PartialObserver<string>) {
   const interval = setInterval(() => {
@@ -17,10 +17,15 @@ const myObs = new Observable(function (observer: PartialObserver<string>) {
   // observer.complete();
 });
 
-const sub = myObs.pipe().subscribe({
-  next: (data) => console.log(data),
-  error: (data) => console.error(data),
-  complete: () => console.log('Done')
+// const sub = myObs.pipe().subscribe({
+//   next: (data) => console.log(data),
+//   error: (data) => console.error(data),
+//   complete: () => console.log('Done')
+// });
+
+const timer$ = timer(5000, 2000);
+const sub = timer$.subscribe({
+  next: (data) => console.log(data)
 });
 
-setTimeout(() => sub.unsubscribe(), 5000);
+setTimeout(() => sub.unsubscribe(), 9100);
