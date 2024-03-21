@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, timer } from 'rxjs';
+import { Observable, fromEvent, of, timer } from 'rxjs';
 import {
+  catchError,
   concatMap,
+  delay,
   exhaustMap,
   map,
   mergeMap,
@@ -19,6 +21,7 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
+  cache: Todo[] = [];
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
@@ -38,12 +41,19 @@ export class TodoService {
       shareReplay()
     );
   }
+  isOnline$ = fromEvent(window, 'online');
 
   // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
-      retry({ count: 2, delay: 2000, resetOnSuccess: true }),
-      map((list) => list.map((item) => this.toolbelt.toTodo(item)))
+      retry({
+        count: 2,
+        delay: (error, count) => fromEvent(window, 'online'),
+        resetOnSuccess: true
+      }),
+      catchError(() => of(this.cache)),
+      map((list) => list.map((item) => this.toolbelt.toTodo(item))),
+      tap((data) => (this.cache = data))
     );
     // TODO: Apply mapping to fix display of tasks
   }
