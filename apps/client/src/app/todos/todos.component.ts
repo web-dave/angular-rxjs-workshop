@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {
+  BehaviorSubject,
   first,
   map,
   merge,
@@ -7,6 +8,7 @@ import {
   of,
   skip,
   Subject,
+  tap,
   withLatestFrom
 } from 'rxjs';
 import { Todo } from './models';
@@ -20,18 +22,24 @@ export class TodosComponent implements OnInit {
   todos$: Observable<Todo[]>;
   todosSource$ = this.todosService.loadFrequently();
   todosInitial$: Observable<Todo[]> = this.todosSource$.pipe(first());
-  todosMostRecent$: Observable<Todo[]> = this.todosSource$.pipe(skip(1));
+  todosMostRecent$: Observable<Todo[]> = this.todosSource$.pipe(
+    skip(1),
+    tap(() => this.showReload$$.next(true))
+  );
 
   update$$ = new Subject<string>();
   show$: Observable<boolean> = this.todosMostRecent$.pipe(map(() => true));
   hide$: Observable<boolean> = this.update$$.pipe(map(() => false));
   showReload$: Observable<boolean> = merge(this.show$, this.hide$);
 
+  showReload$$ = new BehaviorSubject(false);
+
   constructor(private todosService: TodoService) {}
 
   ngOnInit(): void {
     // TODO: Control update of todos in App (back pressure)
     const updatedTodods$: Observable<Todo[]> = this.update$$.pipe(
+      tap(() => this.showReload$$.next(false)),
       withLatestFrom(this.todosMostRecent$),
       // map(([,todos]) =>todos)
       map((data) => data[1])
