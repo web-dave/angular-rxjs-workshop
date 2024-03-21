@@ -10,6 +10,7 @@ import {
   mergeMap,
   retry,
   shareReplay,
+  startWith,
   switchMap,
   tap
 } from 'rxjs/operators';
@@ -41,14 +42,14 @@ export class TodoService {
       shareReplay()
     );
   }
-  isOnline$ = fromEvent(window, 'online');
+  isOnline$ = fromEvent(window, 'online').pipe(startWith(true), shareReplay());
 
   // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
       retry({
         count: 2,
-        delay: (error, count) => fromEvent(window, 'online'),
+        delay: (error, count) => this.isOnline$,
         resetOnSuccess: true
       }),
       catchError(() => of(this.cache)),
