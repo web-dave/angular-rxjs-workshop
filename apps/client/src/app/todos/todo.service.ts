@@ -6,6 +6,7 @@ import {
   exhaustMap,
   map,
   mergeMap,
+  retry,
   shareReplay,
   switchMap,
   tap
@@ -40,9 +41,10 @@ export class TodoService {
 
   // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
-    return this.http
-      .get<TodoApi[]>(`${todosUrl}`)
-      .pipe(map((list) => list.map((item) => this.toolbelt.toTodo(item))));
+    return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
+      retry({ count: 2, delay: 2000, resetOnSuccess: true }),
+      map((list) => list.map((item) => this.toolbelt.toTodo(item)))
+    );
     // TODO: Apply mapping to fix display of tasks
   }
 
