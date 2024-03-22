@@ -6,6 +6,7 @@ import {
   merge,
   Observable,
   of,
+  ReplaySubject,
   skip,
   Subject,
   tap,
@@ -13,6 +14,8 @@ import {
 } from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
+
+import { WebSocketSubject } from 'rxjs/webSocket';
 
 @Component({
   selector: 'dos-todos',
@@ -33,6 +36,7 @@ export class TodosComponent implements OnInit {
   showReload$: Observable<boolean> = merge(this.show$, this.hide$);
 
   showReload$$ = new BehaviorSubject(false);
+  showReload$$$ = new ReplaySubject(1);
 
   constructor(private todosService: TodoService) {}
 

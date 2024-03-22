@@ -31,7 +31,20 @@ export class TodoService {
 
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return timer(500, 1000).pipe(
+    // if polling
+    //      Poll
+    // else
+    //   ping
+
+    return this.settings.settings$.pipe(
+      switchMap((data) => {
+        if (data.isPollingEnabled) {
+          return timer(500, data.pollingInterval);
+        } else {
+          return of(0);
+        }
+      }),
+      // ).pipe(
       // tap((i) => console.log(i)),
       exhaustMap((i) => {
         // console.log(i);
@@ -47,11 +60,11 @@ export class TodoService {
   // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
-      retry({
-        count: 2,
-        delay: (error, count) => this.isOnline$,
-        resetOnSuccess: true
-      }),
+      // retry({
+      //   count: 2,
+      //   delay: (error, count) => this.isOnline$,
+      //   resetOnSuccess: true
+      // }),
       catchError(() => of(this.cache)),
       map((list) => list.map((item) => this.toolbelt.toTodo(item))),
       tap((data) => (this.cache = data))
