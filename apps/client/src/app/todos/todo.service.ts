@@ -5,6 +5,7 @@ import {
   catchError,
   concatMap,
   delay,
+  distinctUntilChanged,
   exhaustMap,
   map,
   mergeMap,
@@ -37,6 +38,12 @@ export class TodoService {
     //   ping
 
     return this.settings.settings$.pipe(
+      distinctUntilChanged(
+        (prev, curr) =>
+          prev.isPollingEnabled === curr.isPollingEnabled &&
+          prev.pollingInterval === curr.pollingInterval
+      ),
+      tap((i) => console.log(i)),
       switchMap((data) => {
         if (data.isPollingEnabled) {
           return timer(500, data.pollingInterval);
@@ -45,7 +52,6 @@ export class TodoService {
         }
       }),
       // ).pipe(
-      // tap((i) => console.log(i)),
       exhaustMap((i) => {
         // console.log(i);
         return this.query().pipe(
