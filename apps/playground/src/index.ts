@@ -26,3 +26,9 @@ const sub = counter$.subscribe({
 setTimeout(() => {
   sub.unsubscribe();
 }, 4000);
+
+// Deprecated! removed in V8
+counter$.subscribe(
+  (data) => console.log(data),
+  (e) => console.log(e)
+);
