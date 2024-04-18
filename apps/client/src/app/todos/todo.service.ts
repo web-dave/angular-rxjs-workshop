@@ -1,11 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, timer } from 'rxjs';
+import { Observable, fromEvent, of, timer } from 'rxjs';
 import {
   concatMap,
+  delay,
   exhaustMap,
+  filter,
   map,
   mergeMap,
+  retry,
   shareReplay,
   switchMap,
   tap
@@ -18,6 +21,13 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
+  isOnline$ = timer(10, 1000).pipe(
+    map(() => navigator.onLine),
+    tap((data) => console.log(data)),
+    filter((online) => online),
+    tap((data) => console.log(data))
+  );
+
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
@@ -37,6 +47,11 @@ export class TodoService {
   // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
+      retry({
+        count: 2,
+        resetOnSuccess: true,
+        delay: (error, cnt) => this.isOnline$
+      }),
       tap((data) => console.log(data[0])),
       map((data) => data.map((itm) => this.toolbelt.toTodo(itm))),
       tap((data) => console.log(data[0]))
