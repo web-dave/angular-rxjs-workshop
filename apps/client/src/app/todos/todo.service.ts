@@ -37,9 +37,30 @@ export class TodoService {
 
   loadFrequently(): Observable<Todo[]> {
     // config$
-    const interval$ = this.settings.settings$.pipe(
+    // const interval$ = this.settings.settings$.pipe(
+    //   switchMap((data) => {
+    //     // data => (data.isPollingEnabled ? timer(500, data.pollingInterval) : of(1))
+    //     // wenn polling?
+    //     if (data.isPollingEnabled) {
+    //       //     intervall
+    //       return timer(500, data.pollingInterval);
+    //     } else {
+    //       //     ein value
+    //       return of(1);
+    //     }
+    //   })
+    // );
+    // TODO: Introduce error handled, configured, recurring, all-mighty stream
+    // return interval$.pipe(
+    //   exhaustMap(() =>
+    //     this.query().pipe(tap({ error: () => this.toolbelt.offerHardReload() }))
+    //   ),
+    //   shareReplay()
+    // );
+    return this.settings.settings$.pipe(
       switchMap((data) => {
-        //     wenn polling?
+        // data => (data.isPollingEnabled ? timer(500, data.pollingInterval) : of(1))
+        // wenn polling?
         if (data.isPollingEnabled) {
           //     intervall
           return timer(500, data.pollingInterval);
@@ -47,11 +68,7 @@ export class TodoService {
           //     ein value
           return of(1);
         }
-      })
-    );
-
-    // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return interval$.pipe(
+      }),
       exhaustMap(() =>
         this.query().pipe(tap({ error: () => this.toolbelt.offerHardReload() }))
       ),
