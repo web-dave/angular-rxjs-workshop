@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, fromEvent, of, timer } from 'rxjs';
 import {
+  catchError,
   concatMap,
   delay,
   exhaustMap,
@@ -52,6 +53,7 @@ export class TodoService {
         resetOnSuccess: true,
         delay: (error, cnt) => this.isOnline$
       }),
+      catchError((error) => of([])),
       tap((data) => console.log(data[0])),
       map((data) => data.map((itm) => this.toolbelt.toTodo(itm))),
       tap((data) => console.log(data[0]))
