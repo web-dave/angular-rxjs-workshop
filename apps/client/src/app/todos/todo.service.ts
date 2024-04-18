@@ -36,8 +36,22 @@ export class TodoService {
   ) {}
 
   loadFrequently(): Observable<Todo[]> {
+    // config$
+    const interval$ = this.settings.settings$.pipe(
+      switchMap((data) => {
+        //     wenn polling?
+        if (data.isPollingEnabled) {
+          //     intervall
+          return timer(500, data.pollingInterval);
+        } else {
+          //     ein value
+          return of(1);
+        }
+      })
+    );
+
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return timer(100, 5000).pipe(
+    return interval$.pipe(
       exhaustMap(() =>
         this.query().pipe(tap({ error: () => this.toolbelt.offerHardReload() }))
       ),
