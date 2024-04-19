@@ -85,9 +85,9 @@ export class TodoService {
         delay: (error, cnt) => this.isOnline$
       }),
       catchError((error) => of([])),
-      tap((data) => console.log(data[0])),
-      map((data) => data.map((itm) => this.toolbelt.toTodo(itm))),
-      tap((data) => console.log(data[0]))
+      // tap((data) => console.log(data[0])),
+      map((data) => data.map((itm) => this.toolbelt.toTodo(itm)))
+      // tap((data) => console.log(data[0]))
     );
     // TODO: Apply mapping to fix display of tasks
   }
