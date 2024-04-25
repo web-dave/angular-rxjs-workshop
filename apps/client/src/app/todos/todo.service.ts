@@ -45,14 +45,17 @@ export class TodoService {
     // return trigger$.pipe(exhaustMap(() => source$));
 
     return timer(50, 1000).pipe(
-      exhaustMap(() => this.query()),
+      exhaustMap(() =>
+        this.query().pipe(
+          retry({
+            count: 1,
+            resetOnSuccess: true,
+            delay: () => this.isOnline
+          }),
+          catchError(() => of([]))
+        )
+      ),
       tap({ error: () => this.toolbelt.offerHardReload() }),
-      retry({
-        count: 1,
-        resetOnSuccess: true,
-        delay: () => this.isOnline
-      }),
-      catchError(() => of([])),
       shareReplay()
     );
   }
