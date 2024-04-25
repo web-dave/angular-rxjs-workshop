@@ -1,11 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, timer } from 'rxjs';
+import { Observable, interval, of, timer } from 'rxjs';
 import {
+  catchError,
   concatMap,
+  delay,
   exhaustMap,
+  filter,
   map,
   mergeMap,
+  retry,
   share,
   shareReplay,
   switchMap,
@@ -19,6 +23,11 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
+  isOnline = interval(1000).pipe(
+    map(() => navigator.onLine),
+    filter((o) => o)
+  );
+
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
@@ -38,6 +47,12 @@ export class TodoService {
     return timer(50, 1000).pipe(
       exhaustMap(() => this.query()),
       tap({ error: () => this.toolbelt.offerHardReload() }),
+      retry({
+        count: 1,
+        resetOnSuccess: true,
+        delay: () => this.isOnline
+      }),
+      catchError(() => of([])),
       shareReplay()
     );
   }
