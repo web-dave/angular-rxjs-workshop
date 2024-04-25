@@ -1,19 +1,6 @@
-import { Observable, Observer, Subscriber } from 'rxjs';
+import { timer } from 'rxjs';
 
-const numbers$ = new Observable(function subscribe(
-  observer: Partial<Observer<number>>
-) {
-  let i = 0;
-  const int = setInterval(() => {
-    observer.next(i);
-    console.log('internal', i);
-    i++;
-  }, 1000);
-
-  return () => {
-    clearInterval(int);
-  };
-});
+const numbers$ = timer(5000, 2000);
 
 const sub = numbers$.subscribe({
   next: (v) => console.log(v),
@@ -23,6 +10,4 @@ const sub = numbers$.subscribe({
 
 setTimeout(() => {
   sub.unsubscribe();
-
-  console.log(sub);
-}, 5000);
+}, 11000);
