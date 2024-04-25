@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import {
+  filter,
   first,
   map,
   merge,
   Observable,
   of,
+  skip,
   Subject,
   withLatestFrom
 } from 'rxjs';
@@ -29,9 +31,13 @@ export class TodosComponent implements OnInit {
     map((data: [void, Todo[]]) => data[1])
   );
 
-  show$: Observable<boolean>;
-  hide$: Observable<boolean>;
-  showReload$: Observable<boolean> = of(true);
+  show$: Observable<boolean> = this.todosSource$.pipe(
+    skip(1),
+    filter((list) => list.length >= 1),
+    map(() => true)
+  );
+  hide$: Observable<boolean> = this.update$$.pipe(map(() => false));
+  showReload$: Observable<boolean> = merge(this.show$, this.hide$);
 
   constructor(private todosService: TodoService) {}
 
