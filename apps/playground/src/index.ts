@@ -3,7 +3,11 @@ import { Observable, Observer, Subscriber } from 'rxjs';
 const numbers$ = new Observable(function subscribe(
   observer: Partial<Observer<number>>
 ) {
-  setInterval(() => observer.next(1), 1000);
+  let i = 0;
+  setInterval(() => {
+    observer.next(i);
+    i++;
+  }, 1000);
 });
 
 numbers$.subscribe({
