@@ -15,6 +15,7 @@ import { Observable } from 'rxjs';
         #todoTextInput
         type="number"
         class="todo__input"
+        min="1000"
         placeholder="What needs to be done?"
         [value]="settings.pollingInterval"
         (change)="updateInterval($event)"
@@ -35,9 +36,7 @@ import { Observable } from 'rxjs';
     </mat-dialog-content>
 
     <mat-dialog-actions align="end">
-      <button mat-dialog-close="" class="todo__button--primary">
-        CLOSE
-      </button>
+      <button mat-dialog-close="" class="todo__button--primary">CLOSE</button>
     </mat-dialog-actions>
   `
 })
