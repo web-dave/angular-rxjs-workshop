@@ -35,29 +35,30 @@ export class TodoService {
   ) {}
 
   loadFrequently(): Observable<Todo[]> {
-    // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    // const trigger$ = timer(50, 2000);
-    // const source$ = this.query().pipe(
-    //   tap({ error: () => this.toolbelt.offerHardReload() }),
-    //   shareReplay()
-    // );
-
-    // return trigger$.pipe(exhaustMap(() => source$));
-
-    return timer(50, 1000).pipe(
-      exhaustMap(() =>
-        this.query().pipe(
-          retry({
-            count: 1,
-            resetOnSuccess: true,
-            delay: () => this.isOnline
-          }),
-          catchError(() => of([]))
-        )
-      ),
-      tap({ error: () => this.toolbelt.offerHardReload() }),
-      shareReplay()
-    );
+    return this.settings.settings$
+      .pipe(
+        switchMap((data) => {
+          if (data.isPollingEnabled) {
+            return timer(50, data.pollingInterval);
+          } else {
+            return of(0);
+          }
+        })
+      )
+      .pipe(
+        exhaustMap(() =>
+          this.query().pipe(
+            retry({
+              count: 1,
+              resetOnSuccess: true,
+              delay: () => this.isOnline
+            }),
+            catchError(() => of([]))
+          )
+        ),
+        tap({ error: () => this.toolbelt.offerHardReload() }),
+        shareReplay()
+      );
   }
 
   // TODO: Fix the return type of this method
