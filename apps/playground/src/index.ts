@@ -2,22 +2,21 @@ import { Observable } from 'rxjs';
 
 // Create observable
 const helloWorld$ = new Observable(function subscribe(observer) {
-  // observer.next(1);
-  // observer.next(2);
-  // observer.error('Ouch!');
-  // observer.next(3);
-  // observer.next(4);
   let i = -1;
-  setInterval(() => {
+  const intRef = setInterval(() => {
     i++;
     observer.next(i);
+    console.log('subcribe', i);
   }, 1000);
+  return function () {
+    clearInterval(intRef);
+  };
 });
 
 // Subscribe to an observable
-helloWorld$.subscribe({
+const sub = helloWorld$.subscribe({
   next(x) {
-    console.log(x);
+    console.log('Oberserver', x);
   },
   error(err) {
     console.error(err);
@@ -26,3 +25,5 @@ helloWorld$.subscribe({
     console.log('done');
   }
 });
+
+setTimeout(() => sub.unsubscribe(), 5000);
