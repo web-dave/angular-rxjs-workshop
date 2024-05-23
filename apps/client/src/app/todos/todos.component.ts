@@ -1,5 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import {
+  first,
+  map,
+  merge,
+  Observable,
+  of,
+  Subject,
+  withLatestFrom
+} from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
 
@@ -8,16 +16,19 @@ import { TodoService } from './todo.service';
   templateUrl: './todos.component.html'
 })
 export class TodosComponent implements OnInit {
-  todos$: Observable<Todo[]>;
-  todosSource$ = this.todosService.loadFrequently();
-  todosInitial$: Observable<Todo[]>;
-  todosMostRecent$: Observable<Todo[]>;
-  foo = false;
-
   update$$ = new Subject();
   show$: Observable<boolean>;
   hide$: Observable<boolean>;
   showReload$: Observable<boolean> = of(true);
+
+  todosSource$ = this.todosService.loadFrequently();
+  todosInitial$: Observable<Todo[]> = this.todosSource$.pipe(first());
+  todosMostRecent$: Observable<Todo[]> = this.update$$.pipe(
+    withLatestFrom(this.todosSource$),
+    map((data) => data[1])
+  );
+  todos$: Observable<Todo[]> = merge(this.todosInitial$, this.todosMostRecent$);
+  foo = false;
 
   constructor(private todosService: TodoService) {
     setTimeout(() => {
@@ -27,8 +38,7 @@ export class TodosComponent implements OnInit {
 
   ngOnInit(): void {
     // TODO: Control update of todos in App (back pressure)
-    this.todos$ = this.todosSource$;
-
+    // this.todos$ = this.todosSource$;
     // TODO: Control display of refresh button
   }
 
