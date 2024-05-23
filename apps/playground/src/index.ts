@@ -2,11 +2,16 @@ import { Observable } from 'rxjs';
 
 // Create observable
 const helloWorld$ = new Observable(function subscribe(observer) {
-  observer.next(1);
-  observer.next(2);
-  observer.error('Ouch!');
-  observer.next(3);
-  observer.next(4);
+  // observer.next(1);
+  // observer.next(2);
+  // observer.error('Ouch!');
+  // observer.next(3);
+  // observer.next(4);
+  let i = -1;
+  setInterval(() => {
+    i++;
+    observer.next(i);
+  }, 1000);
 });
 
 // Subscribe to an observable
