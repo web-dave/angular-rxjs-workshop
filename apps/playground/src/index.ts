@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 
 // Create observable
 const helloWorld$ = new Observable(function subscribe(observer) {
@@ -14,16 +14,24 @@ const helloWorld$ = new Observable(function subscribe(observer) {
 });
 
 // Subscribe to an observable
-const sub = helloWorld$.subscribe({
-  next(x) {
-    console.log('Oberserver', x);
-  },
-  error(err) {
-    console.error(err);
-  },
-  complete() {
-    console.log('done');
-  }
+// const sub = helloWorld$.subscribe({
+//   next(x) {
+//     console.log('Oberserver', x);
+//   },
+//   error(err) {
+//     console.error(err);
+//   },
+//   complete() {
+//     console.log('done');
+//   }
+// });
+// setTimeout(() => sub.unsubscribe(), 5000);
+
+const timer$ = timer(5000, 2000);
+
+const sub = timer$.subscribe({
+  next: (v) => console.log(v)
 });
 
-setTimeout(() => sub.unsubscribe(), 5000);
+setTimeout(() => sub.unsubscribe(), 9200);
+//timer(9200).subscribe(() => sub.unsubscribe());

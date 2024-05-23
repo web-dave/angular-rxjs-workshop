@@ -12,13 +12,18 @@ export class TodosComponent implements OnInit {
   todosSource$ = this.todosService.loadFrequently();
   todosInitial$: Observable<Todo[]>;
   todosMostRecent$: Observable<Todo[]>;
+  foo = false;
 
   update$$ = new Subject();
   show$: Observable<boolean>;
   hide$: Observable<boolean>;
   showReload$: Observable<boolean> = of(true);
 
-  constructor(private todosService: TodoService) {}
+  constructor(private todosService: TodoService) {
+    setTimeout(() => {
+      this.foo = true;
+    }, 6000);
+  }
 
   ngOnInit(): void {
     // TODO: Control update of todos in App (back pressure)
