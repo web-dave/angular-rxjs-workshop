@@ -4,6 +4,7 @@ import { Observable, of, timer } from 'rxjs';
 import {
   catchError,
   concatMap,
+  delay,
   exhaustMap,
   filter,
   map,
@@ -22,6 +23,11 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
+  online$ = timer(1000, 1000).pipe(
+    map(() => navigator.onLine),
+    filter((online) => online)
+  );
+
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
@@ -48,7 +54,7 @@ export class TodoService {
       retry({
         count: 2,
         resetOnSuccess: true,
-        delay: 200
+        delay: (err) => this.online$
       }),
       catchError((error) => of(null)),
       filter((data) => !!data),
