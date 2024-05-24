@@ -1,25 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   first,
   map,
   merge,
   Observable,
   of,
+  skip,
+  skipUntil,
+  startWith,
   Subject,
+  takeUntil,
   withLatestFrom
 } from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
+import { kill } from 'process';
 
 @Component({
   selector: 'dos-todos',
   templateUrl: './todos.component.html'
 })
-export class TodosComponent implements OnInit {
+export class TodosComponent implements OnInit, OnDestroy {
+  kill$ = new Subject();
   update$$ = new Subject();
-  show$: Observable<boolean>;
-  hide$: Observable<boolean>;
-  showReload$: Observable<boolean> = of(true);
 
   todosSource$ = this.todosService.loadFrequently();
   todosInitial$: Observable<Todo[]> = this.todosSource$.pipe(first());
@@ -28,12 +31,26 @@ export class TodosComponent implements OnInit {
     map((data) => data[1])
   );
   todos$: Observable<Todo[]> = merge(this.todosInitial$, this.todosMostRecent$);
+
+  show$: Observable<true> = this.todosSource$.pipe(
+    skip(1),
+    map(() => true)
+  );
+  hide$: Observable<false> = this.update$$.pipe(
+    startWith(false),
+    map(() => false)
+  );
+  showReload$: Observable<boolean> = merge(this.show$, this.hide$);
+
   foo = false;
 
   constructor(private todosService: TodoService) {
     setTimeout(() => {
       this.foo = true;
     }, 6000);
+  }
+  ngOnDestroy(): void {
+    this.kill$.next(1);
   }
 
   ngOnInit(): void {
@@ -50,6 +67,9 @@ export class TodosComponent implements OnInit {
      *
      * We just want to focus you on RxJS.
      */
-    this.todosService.completeOrIncomplete(todoForUpdate).subscribe();
+    this.todosService
+      .completeOrIncomplete(todoForUpdate)
+      .pipe(takeUntil(this.kill$))
+      .subscribe();
   }
 }
