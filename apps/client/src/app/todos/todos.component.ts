@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
+  BehaviorSubject,
   first,
   map,
   merge,
   Observable,
   of,
+  ReplaySubject,
   skip,
   skipUntil,
   startWith,
@@ -14,13 +16,16 @@ import {
 } from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
-import { kill } from 'process';
+import { WebSocketSubject } from 'rxjs/webSocket';
 
 @Component({
   selector: 'dos-todos',
   templateUrl: './todos.component.html'
 })
 export class TodosComponent implements OnInit, OnDestroy {
+  ws = new WebSocketSubject('ws://127.0.0.1:51499');
+  honk$$ = new BehaviorSubject(7);
+
   kill$ = new Subject();
   update$$ = new Subject();
 
@@ -48,6 +53,16 @@ export class TodosComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.foo = true;
     }, 6000);
+
+    this.honk$$.next(9);
+    this.honk$$.complete();
+
+    this.honk$$.subscribe({
+      next: (data) => console.log(data),
+      error: (e) => console.error(e)
+    });
+    this.ws.subscribe((msg) => console.log('==>', msg));
+    this.ws.next('Moin');
   }
   ngOnDestroy(): void {
     this.kill$.next(1);
