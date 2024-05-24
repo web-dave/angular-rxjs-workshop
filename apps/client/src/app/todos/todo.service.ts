@@ -35,7 +35,21 @@ export class TodoService {
   ) {}
 
   loadFrequently() {
-    return timer(500, 2000).pipe(
+    // this.settings.settings$.pipe(
+    //   switchMap((settings) => timer(500, settings.pollingInterval))
+    // );
+
+    return this.settings.settings$.pipe(
+      // switchMap((settings) => {
+      //   if (settings.isPollingEnabled) {
+      //     return timer(500, settings.pollingInterval);
+      //   } else {
+      //     return of(0);
+      //   }
+      // }),
+      switchMap(({ isPollingEnabled, pollingInterval }) =>
+        isPollingEnabled ? timer(500, pollingInterval) : of(0)
+      ),
       exhaustMap(() => this.query()),
       tap({ error: () => this.toolbelt.offerHardReload() }),
       shareReplay()
