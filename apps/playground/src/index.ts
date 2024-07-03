@@ -1,30 +1,32 @@
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, Subscriber, timer } from 'rxjs';
 
 const observable = {
   observer: null
 };
 
-const cnt = new Observable(function (observer: Subscriber<number>) {
-  let i = 0;
-  const int = setInterval(() => {
-    observer.next(i);
-    console.log('intern', i);
-    i++;
-  }, 1000);
+// const cnt = new Observable(function (observer: Subscriber<number>) {
+//   let i = 0;
+//   const int = setInterval(() => {
+//     observer.next(i);
+//     console.log('intern', i);
+//     i++;
+//   }, 1000);
 
-  return () => {
-    clearInterval(int);
-  };
-  // observer.next(1);
-  // observer.next(2);
-  // observer.next(3);
-  // observer.error('Ouch!');
-  // observer.next(4);
-});
+//   return () => {
+//     clearInterval(int);
+//   };
+//   // observer.next(1);
+//   // observer.next(2);
+//   // observer.next(3);
+//   // observer.error('Ouch!');
+//   // observer.next(4);
+// });
+
+const cnt = timer(5000, 2000);
 
 const sub = cnt.subscribe({
   error: (e) => console.error(e),
   complete: () => console.log('Done!'),
   next: (data) => console.log(data)
 });
-setTimeout(() => sub.unsubscribe(), 4000);
+setTimeout(() => sub.unsubscribe(), 7300);
