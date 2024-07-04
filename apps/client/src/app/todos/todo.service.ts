@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, timer } from 'rxjs';
+import { Observable, fromEvent, interval, merge, of, timer } from 'rxjs';
 import {
   catchError,
   exhaustMap,
@@ -9,6 +9,7 @@ import {
   retry,
   share,
   shareReplay,
+  startWith,
   tap
 } from 'rxjs/operators';
 import { Toolbelt } from './internals';
@@ -19,6 +20,18 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
+  // online$ = fromEvent(window, 'online').pipe(
+  //   map(() => true),
+  //   startWith(true),
+  //   shareReplay()
+  // );
+  // offline$ = fromEvent(window, 'offline').pipe(map(() => false));
+
+  isOnline$ = interval(1000).pipe(
+    map(() => navigator.onLine),
+    tap((data) => console.log(data))
+  );
+
   constructor(
     private http: HttpClient,
     private toolbelt: Toolbelt,
@@ -46,7 +59,11 @@ export class TodoService {
         // TODO: Apply mapping to fix display of tasks
         .pipe(
           map((data) => data.map((itm) => this.toolbelt.toTodo(itm))),
-          retry({ count: 2, delay: 500, resetOnSuccess: true }),
+          retry({
+            count: 2,
+            delay: 500,
+            resetOnSuccess: true
+          }),
           catchError((error) => of(null)),
           filter((data) => !!data)
         )
