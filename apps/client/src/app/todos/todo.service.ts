@@ -10,6 +10,7 @@ import {
   share,
   shareReplay,
   startWith,
+  switchMap,
   tap
 } from 'rxjs/operators';
 import { Toolbelt } from './internals';
@@ -38,16 +39,21 @@ export class TodoService {
   ) {}
 
   loadFrequently() {
-    return timer(10, 5000).pipe(
+    return this.settings.settings$.pipe(
+      // switchMap((data) =>
+      //   data.isPollingEnabled ? timer(500, data.pollingInterval) : of(0)
+      // )
+      switchMap((data) => {
+        if (data.isPollingEnabled) {
+          return timer(500, data.pollingInterval);
+        } else {
+          return of(0);
+        }
+      }),
       exhaustMap(() => this.query()),
       shareReplay(1),
       tap({ error: () => this.toolbelt.offerHardReload() })
     );
-    // // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    // return this.query().pipe(
-    //   shareReplay(1),
-    // tap({ error: () => this.toolbelt.offerHardReload() })
-    // );
   }
 
   // TODO: Fix the return type of this method
