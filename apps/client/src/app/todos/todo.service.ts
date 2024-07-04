@@ -29,7 +29,8 @@ export class TodoService {
 
   isOnline$ = interval(1000).pipe(
     map(() => navigator.onLine),
-    tap((data) => console.log(data))
+    tap((data) => console.log('===>', data)),
+    filter((online) => online)
   );
 
   constructor(
@@ -61,7 +62,7 @@ export class TodoService {
           map((data) => data.map((itm) => this.toolbelt.toTodo(itm))),
           retry({
             count: 2,
-            delay: 500,
+            delay: () => this.isOnline$,
             resetOnSuccess: true
           }),
           catchError((error) => of(null)),
