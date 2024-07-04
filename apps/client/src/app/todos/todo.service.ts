@@ -20,12 +20,10 @@ const todosUrl = 'http://localhost:3333/api';
 
 @Injectable()
 export class TodoService {
-  // online$ = fromEvent(window, 'online').pipe(
-  //   map(() => true),
-  //   startWith(true),
-  //   shareReplay()
-  // );
-  // offline$ = fromEvent(window, 'offline').pipe(map(() => false));
+  online$ = fromEvent(window, 'online').pipe(
+    tap((data) => console.log('window.online ===>', data))
+  );
+  // .subscribe();
 
   isOnline$ = interval(1000).pipe(
     map(() => navigator.onLine),
