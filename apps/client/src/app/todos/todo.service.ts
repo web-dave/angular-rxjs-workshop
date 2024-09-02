@@ -6,6 +6,7 @@ import {
   exhaustMap,
   map,
   mergeMap,
+  retry,
   shareReplay,
   switchMap,
   tap
@@ -27,8 +28,12 @@ export class TodoService {
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
     return timer(10, 1700).pipe(
+      map((data) => data),
       exhaustMap(() =>
-        this.query().pipe(tap({ error: () => this.toolbelt.offerHardReload() }))
+        this.query().pipe(
+          retry(2),
+          tap({ error: () => this.toolbelt.offerHardReload() })
+        )
       ),
       shareReplay()
     );
