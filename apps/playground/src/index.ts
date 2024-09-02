@@ -1,11 +1,11 @@
 import { Observable } from 'rxjs';
 
 const numbers$ = new Observable((observer) => {
-  observer.next(1);
-  observer.next(2);
-  observer.next(3);
-  observer.complete();
-  observer.next(4);
+  let i = -1;
+  setInterval(() => {
+    i++;
+    observer.next(i);
+  }, 1000);
 });
 
 numbers$.subscribe({
