@@ -4,6 +4,7 @@ import { Observable, timer } from 'rxjs';
 import {
   concatMap,
   exhaustMap,
+  filter,
   map,
   mergeMap,
   retry,
@@ -25,13 +26,23 @@ export class TodoService {
     private settings: TodoSettings
   ) {}
 
+  online$: Observable<boolean> = timer(10, 2000).pipe(
+    map(() => navigator.onLine),
+    filter((data) => !!data),
+    tap((data) => console.log(data))
+  );
+
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
     return timer(10, 1700).pipe(
       map((data) => data),
       exhaustMap(() =>
         this.query().pipe(
-          retry(2),
+          retry({
+            count: 2,
+            resetOnSuccess: true,
+            delay: () => this.online$
+          }),
           tap({ error: () => this.toolbelt.offerHardReload() })
         )
       ),
