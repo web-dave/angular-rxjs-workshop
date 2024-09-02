@@ -1,17 +1,6 @@
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 
-const numbers$ = new Observable((observer) => {
-  let i = -1;
-  const int = setInterval(() => {
-    i++;
-    observer.next(i);
-    console.log('interval', i);
-  }, 1000);
-
-  return () => {
-    clearInterval(int);
-  };
-});
+const numbers$ = timer(10, 2000);
 
 const sub = numbers$.subscribe({
   next: (data) => console.log('N', data),
@@ -19,4 +8,4 @@ const sub = numbers$.subscribe({
   complete: () => console.log('C')
 });
 
-setTimeout(() => sub.unsubscribe(), 3000);
+setTimeout(() => sub.unsubscribe(), 5000);
