@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, timer } from 'rxjs';
+import { Observable, of, timer } from 'rxjs';
 import {
+  catchError,
   concatMap,
   exhaustMap,
   filter,
@@ -34,15 +35,15 @@ export class TodoService {
 
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return timer(10, 1700).pipe(
+    return timer(10, 3000).pipe(
       map((data) => data),
       exhaustMap(() =>
         this.query().pipe(
           retry({
-            count: 2,
             resetOnSuccess: true,
             delay: () => this.online$
           }),
+
           tap({ error: () => this.toolbelt.offerHardReload() })
         )
       ),

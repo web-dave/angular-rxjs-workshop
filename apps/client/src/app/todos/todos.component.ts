@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of, Subject } from 'rxjs';
+import { map, Observable, of, Subject, withLatestFrom } from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
 
@@ -22,7 +22,11 @@ export class TodosComponent implements OnInit {
 
   ngOnInit(): void {
     // TODO: Control update of todos in App (back pressure)
-    this.todos$ = this.todosSource$;
+
+    this.todos$ = this.update$$.pipe(
+      withLatestFrom(this.todosSource$),
+      map((data) => data[1])
+    );
 
     // TODO: Control display of refresh button
   }
