@@ -33,18 +33,20 @@ export class TodoService {
     tap((data) => console.log(data))
   );
 
-  loadFrequently() {
+  loadFrequently(): Observable<Todo[]> {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
     return timer(10, 3000).pipe(
       map((data) => data),
       exhaustMap(() =>
         this.query().pipe(
           retry({
+            count: 2,
             resetOnSuccess: true,
             delay: () => this.online$
           }),
-
-          tap({ error: () => this.toolbelt.offerHardReload() })
+          tap({ error: (err) => console.error(err) }),
+          catchError(() => null),
+          filter((value: null | Todo[]) => value !== null)
         )
       ),
       shareReplay()
