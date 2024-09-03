@@ -44,8 +44,8 @@ export class TodoService {
             resetOnSuccess: true,
             delay: () => this.online$
           }),
-          tap({ error: (err) => console.error(err) }),
-          catchError(() => null),
+          // tap({ error: (err) => console.error(err) }),
+          catchError(() => of(null)),
           filter((value: null | Todo[]) => value !== null)
         )
       ),
