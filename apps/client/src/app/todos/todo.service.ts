@@ -35,7 +35,15 @@ export class TodoService {
 
   loadFrequently(): Observable<Todo[]> {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return timer(10, 3000).pipe(
+
+    return this.settings.settings$.pipe(
+      switchMap((config) => {
+        if (config.isPollingEnabled) {
+          return timer(500, config.pollingInterval);
+        } else {
+          return of(0);
+        }
+      }),
       map((data) => data),
       exhaustMap(() =>
         this.query().pipe(
