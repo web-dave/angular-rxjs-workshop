@@ -6,6 +6,7 @@ import {
   exhaustMap,
   map,
   mergeMap,
+  retry,
   share,
   shareReplay,
   switchMap,
@@ -33,7 +34,7 @@ export class TodoService {
     // )
 
     return timer(10, 500).pipe(
-      exhaustMap(() => this.query()),
+      exhaustMap(() => this.query().pipe(retry(4))),
       share(),
       tap({ error: () => this.toolbelt.offerHardReload() })
     );
