@@ -1,27 +1,15 @@
 import { Observable } from 'rxjs';
 
-const myObservable = {
-  observer: null,
-  subscribe: function (obs) {
-    myObservable.observer = obs;
-    setTimeout(() => myObservable.next('Hallo'), 3000);
-  },
-  next: function (value: any) {
-    myObservable.observer.next(value);
-  },
-  complete: function () {
-    myObservable.observer.complete();
-    myObservable.observer = null;
-    myObservable.next(44);
-  },
-  error: function (err) {
-    myObservable.observer.error(err);
-    myObservable.observer = null;
-  }
-};
+const number$ = new Observable(function (observer) {
+  observer.next(1);
+  observer.next(2);
+  observer.next(3);
+  observer.next(4);
+  observer.error('Ouch');
+});
 
-const foo = myObservable.subscribe({
+number$.subscribe({
   next: (data) => console.log(data),
-  complete: () => console.info('Done'),
-  error: (err) => console.error(err)
+  error: (err) => console.error(err),
+  complete: () => console.info('Done')
 });
