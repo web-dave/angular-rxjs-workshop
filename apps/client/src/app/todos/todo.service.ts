@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, timer } from 'rxjs';
+import { fromEvent, Observable, of, timer } from 'rxjs';
 import {
+  catchError,
   concatMap,
+  delay,
   exhaustMap,
   map,
   mergeMap,
@@ -26,6 +28,10 @@ export class TodoService {
     private settings: TodoSettings
   ) {}
 
+  isOnline$ = fromEvent(window, 'online').pipe(
+    tap((data) => console.log('online', data))
+  );
+
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
 
@@ -33,8 +39,12 @@ export class TodoService {
     //   mergeMap(()=>source$)
     // )
 
-    return timer(10, 500).pipe(
-      exhaustMap(() => this.query().pipe(retry(4))),
+    return timer(10, 5000).pipe(
+      exhaustMap(() => this.query().pipe()),
+      retry({
+        count: 4,
+        delay: () => this.isOnline$
+      }),
       share(),
       tap({ error: () => this.toolbelt.offerHardReload() })
     );
