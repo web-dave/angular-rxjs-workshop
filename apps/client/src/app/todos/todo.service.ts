@@ -38,13 +38,17 @@ export class TodoService {
     // trigger$.pipe(
     //   mergeMap(()=>source$)
     // )
-
+    let cache: Todo[] = [];
     return timer(10, 5000).pipe(
       exhaustMap(() => this.query().pipe()),
+      tap((data) => (cache = data)),
       retry({
         count: 4,
-        delay: () => this.isOnline$
+        // delay: () => this.isOnline$
+        delay: 500,
+        resetOnSuccess: true
       }),
+      catchError(() => of(cache)),
       share(),
       tap({ error: () => this.toolbelt.offerHardReload() })
     );
