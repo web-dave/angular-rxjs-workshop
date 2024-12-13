@@ -1,19 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { fromEvent, Observable, of, timer } from 'rxjs';
-import {
-  catchError,
-  concatMap,
-  delay,
-  exhaustMap,
-  map,
-  mergeMap,
-  retry,
-  share,
-  shareReplay,
-  switchMap,
-  tap
-} from 'rxjs/operators';
+import { catchError, exhaustMap, map, retry, share, tap } from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
 import { TodoSettings } from './todo-settings.service';
@@ -35,9 +23,6 @@ export class TodoService {
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
 
-    // trigger$.pipe(
-    //   mergeMap(()=>source$)
-    // )
     let cache: Todo[] = [];
     return timer(10, 5000).pipe(
       exhaustMap(() => this.query().pipe()),
