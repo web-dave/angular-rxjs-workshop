@@ -32,7 +32,7 @@ export class TodoService {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
 
     let cache: Todo[] = [];
-    // trigger.pipe(switchMap(source))
+
     return this.settings.settings$
       .pipe(
         switchMap((config) => {
