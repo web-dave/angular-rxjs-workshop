@@ -1,7 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { fromEvent, Observable, of, timer } from 'rxjs';
-import { catchError, exhaustMap, map, retry, share, tap } from 'rxjs/operators';
+import {
+  catchError,
+  exhaustMap,
+  map,
+  retry,
+  share,
+  switchMap,
+  tap
+} from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
 import { TodoSettings } from './todo-settings.service';
@@ -24,19 +32,30 @@ export class TodoService {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
 
     let cache: Todo[] = [];
-    return timer(10, 5000).pipe(
-      exhaustMap(() => this.query().pipe()),
-      tap((data) => (cache = data)),
-      retry({
-        count: 4,
-        // delay: () => this.isOnline$
-        delay: 500,
-        resetOnSuccess: true
-      }),
-      catchError(() => of(cache)),
-      share(),
-      tap({ error: () => this.toolbelt.offerHardReload() })
-    );
+    // trigger.pipe(switchMap(source))
+    return this.settings.settings$
+      .pipe(
+        switchMap((config) => {
+          if (!config.isPollingEnabled) {
+            return of(0);
+          } else {
+            return timer(10, config.pollingInterval);
+          }
+        })
+      )
+      .pipe(
+        exhaustMap(() => this.query().pipe()),
+        tap((data) => (cache = data)),
+        retry({
+          count: 4,
+          // delay: () => this.isOnline$
+          delay: 500,
+          resetOnSuccess: true
+        }),
+        catchError(() => of(cache)),
+        share(),
+        tap({ error: () => this.toolbelt.offerHardReload() })
+      );
   }
 
   // TODO: Fix the return type of this method
