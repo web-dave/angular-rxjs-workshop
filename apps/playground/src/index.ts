@@ -1,4 +1,4 @@
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, timer } from 'rxjs';
 
 console.log('Moin');
 
@@ -17,25 +17,32 @@ const obs = {
     },
 };
 
-const number$ = new Observable(
-    (observer: Observer<number>) => {
-        let i = 0;
-        // observer.next(1)
-        // observer.next(2)
-        // observer.error('Ouch')
-        // observer.next(3)
-        // observer.next(4)
-        const interval = setInterval(() => {
-            observer.next(i);
-            console.log('intern', i)
-            i++;
-        }, 1000)
+// const number$ = new Observable(
+//     (observer: Observer<number>) => {
+//         let i = 0;
+//         // observer.next(1)
+//         // observer.next(2)
+//         // observer.error('Ouch')
+//         // observer.next(3)
+//         // observer.next(4)
+//         const interval = setInterval(() => {
+//             observer.next(i);
+//             console.log('intern', i)
 
-        return function foo() {
-            clearInterval(interval)
-        }
-    }
-)
+//             if (i >= 60) {
+//                 observer.complete()
+//                 clearInterval(interval)
+//             }
+//             i++;
+//         }, 1000)
+
+//         return function foo() {
+//             clearInterval(interval)
+//         }
+//     }
+// )
+
+const number$ = timer(5000, 2000)
 
 const sub = number$.subscribe({
     next: data => console.log(data),
@@ -43,4 +50,4 @@ const sub = number$.subscribe({
     complete: () => console.log('Done'),
 })
 
-setTimeout(() => sub.unsubscribe(), 5000)
+setTimeout(() => sub.unsubscribe(), 11000)
