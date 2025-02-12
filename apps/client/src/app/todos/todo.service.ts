@@ -14,7 +14,7 @@ export class TodoService {
     private http: HttpClient,
     private toolbelt: Toolbelt,
     private settings: TodoSettings
-  ) {}
+  ) { }
 
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
@@ -24,9 +24,14 @@ export class TodoService {
   }
 
   // TODO: Fix the return type of this method
-  private query(): Observable<any> {
-    return this.http.get<TodoApi[]>(`${todosUrl}`);
+  private query(): Observable<Todo[]> {
+    return this.http.get<TodoApi[]>(`${todosUrl}`)
+      .pipe(map(data => this.toTodoList(data)));
     // TODO: Apply mapping to fix display of tasks
+  }
+
+  private toTodoList(todoList: TodoApi[]): Todo[] {
+    return todoList.map(t => this.toolbelt.toTodo(t))
   }
 
   create(todo: Todo): Observable<TodoApi> {
