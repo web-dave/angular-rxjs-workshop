@@ -19,11 +19,16 @@ const obs = {
 
 const number$ = new Observable(
     (observer: Observer<number>) => {
-        observer.next(1)
-        observer.next(2)
-        observer.error('Ouch')
-        observer.next(3)
-        observer.next(4)
+        let i = 0;
+        // observer.next(1)
+        // observer.next(2)
+        // observer.error('Ouch')
+        // observer.next(3)
+        // observer.next(4)
+        setInterval(() => {
+            observer.next(i);
+            i++;
+        }, 1000)
     }
 )
 
