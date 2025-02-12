@@ -17,30 +17,30 @@ const obs = {
     },
 };
 
-// const number$ = new Observable(
-//     (observer: Observer<number>) => {
-//         let i = 0;
-//         // observer.next(1)
-//         // observer.next(2)
-//         // observer.error('Ouch')
-//         // observer.next(3)
-//         // observer.next(4)
-//         const interval = setInterval(() => {
-//             observer.next(i);
-//             console.log('intern', i)
+const number_$ = new Observable(
+    (observer: Observer<number>) => {
+        let i = 0;
+        // observer.next(1)
+        // observer.next(2)
+        // observer.error('Ouch')
+        // observer.next(3)
+        // observer.next(4)
+        const interval = setInterval(() => {
+            observer.next(i);
+            console.log('intern', i)
 
-//             if (i >= 60) {
-//                 observer.complete()
-//                 clearInterval(interval)
-//             }
-//             i++;
-//         }, 1000)
+            if (i >= 60) {
+                observer.complete()
+                clearInterval(interval)
+            }
+            i++;
+        }, 1000)
 
-//         return function foo() {
-//             clearInterval(interval)
-//         }
-//     }
-// )
+        return function foo() {
+            clearInterval(interval)
+        }
+    }
+)
 
 const number$ = timer(5000, 2000)
 
