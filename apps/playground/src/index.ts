@@ -25,15 +25,22 @@ const number$ = new Observable(
         // observer.error('Ouch')
         // observer.next(3)
         // observer.next(4)
-        setInterval(() => {
+        const interval = setInterval(() => {
             observer.next(i);
+            console.log('intern', i)
             i++;
         }, 1000)
+
+        return function foo() {
+            clearInterval(interval)
+        }
     }
 )
 
-number$.subscribe({
+const sub = number$.subscribe({
     next: data => console.log(data),
     error: data => console.log(data),
     complete: () => console.log('Done'),
 })
+
+setTimeout(() => sub.unsubscribe(), 5000)
