@@ -1,4 +1,5 @@
-import { Observable, Observer, timer } from 'rxjs';
+import { error } from 'console';
+import { concatMap, iif, Observable, Observer, of, retry, tap, throwError, timer } from 'rxjs';
 
 console.log('Moin');
 
@@ -51,3 +52,14 @@ const sub = number$.subscribe({
 })
 
 setTimeout(() => sub.unsubscribe(), 11000)
+
+const foo = number$.pipe(
+    tap(i => console.log('TAP', i)),
+    concatMap((i) => (i >= 2) ? throwError(() => new Error('Aaaargh! ' + i)) : of(i)),
+    tap({ error: i => console.log('TAP error', i) }),
+    retry({ count: 2 })
+)
+foo.subscribe({
+    next: data => console.log(data),
+    error: err => console.log(err)
+})
