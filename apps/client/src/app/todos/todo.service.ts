@@ -4,7 +4,7 @@ import { Observable, of, timer } from 'rxjs';
 import { concatMap, delay, exhaustMap, filter, map, mergeMap, retry, share, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
-import { TodoSettings } from './todo-settings.service';
+import { TodoSettings, TodoSettingsOptions } from './todo-settings.service';
 
 const todosUrl = '/api';
 
@@ -18,7 +18,16 @@ export class TodoService {
 
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return timer(10, 5000).pipe(
+
+    return this.settings.settings$.pipe(
+      switchMap(settings => {
+        if (settings.isPollingEnabled) {
+          return timer(10, settings?.pollingInterval || 5000)
+        }
+        else {
+          return of(0)
+        }
+      }),
       exhaustMap(() => this.query().pipe(
 
         tap({ error: () => this.toolbelt.offerHardReload() })

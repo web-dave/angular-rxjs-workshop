@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { scan, shareReplay } from 'rxjs/operators';
 
 export interface TodoSettingsOptions {
@@ -16,8 +16,11 @@ export class TodoSettings {
 
   settings$ = this.settings$$.pipe(
     scan((prev, next) => ({ ...prev, ...next })),
+
     shareReplay(1)
   );
+
+  // foo = this.settings$.subscribe(data => console.log(data))
 
   update(updates: Partial<TodoSettingsOptions>) {
     this.settings$$.next(updates);
