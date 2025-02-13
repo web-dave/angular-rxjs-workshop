@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, timer } from 'rxjs';
-import { concatMap, exhaustMap, filter, map, mergeMap, retry, share, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { Observable, of, timer } from 'rxjs';
+import { concatMap, delay, exhaustMap, filter, map, mergeMap, retry, share, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
 import { TodoSettings } from './todo-settings.service';
@@ -32,11 +32,13 @@ export class TodoService {
     // );
   }
 
+  isOnline$ = timer(10, 1000).pipe(map(() => navigator.onLine), filter(online => !!online))
+
   // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`)
       .pipe(
-        retry({ count: 2 }),
+        retry({ count: 2, delay: () => this.isOnline$ }),
         map(data => this.toTodoList(data)),
         tap(data => data[0])
       );
