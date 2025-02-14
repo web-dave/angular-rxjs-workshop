@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, timer } from 'rxjs';
-import { concatMap, delay, exhaustMap, filter, map, mergeMap, retry, share, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { catchError, concatMap, delay, exhaustMap, filter, map, mergeMap, retry, share, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
 import { TodoSettings, TodoSettingsOptions } from './todo-settings.service';
@@ -20,6 +20,7 @@ export class TodoService {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
 
     return this.settings.settings$.pipe(
+      tap(console.log),
       switchMap(settings => {
         if (settings.isPollingEnabled) {
           return timer(10, settings?.pollingInterval || 5000)
@@ -47,7 +48,9 @@ export class TodoService {
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`)
       .pipe(
-        retry({ count: 2, delay: () => this.isOnline$ }),
+        retry({ count: 2, delay: () => this.isOnline$, resetOnSuccess: false }),
+        catchError(() => of(null)),
+        filter(data => !!data),
         map(data => this.toTodoList(data)),
         tap(data => data[0])
       );
