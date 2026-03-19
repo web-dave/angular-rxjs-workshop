@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, timer } from 'rxjs';
+import { Observable, of, timer } from 'rxjs';
 import {
+  catchError,
   concatMap,
   exhaustMap,
   map,
   mergeMap,
+  retry,
   share,
   shareReplay,
   switchMap,
@@ -41,6 +43,8 @@ export class TodoService {
   // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
+      retry({ count: 3, resetOnSuccess: true }),
+      catchError(() => of([])),
       tap((list) => console.log(list)),
       map((list) => list.map((t) => this.toolbelt.toTodo(t))),
       tap((list) => console.log(list))
