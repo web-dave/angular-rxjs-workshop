@@ -5,22 +5,21 @@
 ></dos-todo-updater>
 <main class="todo__app">
   @if(todos$ | async; as todos) {
-    <dos-todo-counter
+  <dos-todo-counter
     [count]="todos.length"
     class="todo__component--spaced"
   ></dos-todo-counter>
 
   @for(todo of todos; track todo.id) {
-    <dos-todo-checker
-      [todo]="todo"
-      (toggle)="completeOrIncompleteTodo($event)"
-    ></dos-todo-checker>
+  <dos-todo-checker
+    [todo]="todo"
+    (toggle)="completeOrIncompleteTodo($event)"
+  ></dos-todo-checker>
+  } } @else {
+  <span style="padding: 8px"> Get todos ready for you... </span>
   }
-  } @else {
-    <span style="padding: 8px">
-      Get todos ready for you...
-    </span>
-  }
-
+  <!-- <button (click)="sp = !sp">show Pinned</button>
+  @if(sp){ -->
   <dos-todos-pinned [todos]="todos$ | async"></dos-todos-pinned>
+  <!-- } -->
 </main>

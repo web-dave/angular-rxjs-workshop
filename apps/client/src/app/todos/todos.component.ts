@@ -23,7 +23,7 @@ import { TodoNavigationComponent } from './internals/components/todo-navigation/
 })
 export class TodosComponent implements OnInit {
   private todosService = inject(TodoService);
-
+  sp = false;
   todos$ = new Observable<Todo[]>();
   todosSource$ = this.todosService.loadFrequently();
   todosInitial$ = new Observable<Todo[]>();

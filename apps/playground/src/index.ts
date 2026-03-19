@@ -1,4 +1,4 @@
-import { timer } from 'rxjs';
+import { share, shareReplay, timer } from 'rxjs';
 
 // Create observable
 // const helloWorld$ = new Observable(function (observer) {
@@ -13,12 +13,12 @@ import { timer } from 'rxjs';
 //   };
 // });
 
-const helloWorld$ = timer(5000, 2000);
+const helloWorld$ = timer(500, 1000).pipe(shareReplay(4));
 
 // Subscribe to an observable
 const sub = helloWorld$.subscribe({
   next(x) {
-    console.log(x);
+    console.log('ens', x);
   },
   error(err) {
     console.error('ERROR', err);
@@ -27,5 +27,22 @@ const sub = helloWorld$.subscribe({
     console.log('done');
   }
 });
+let sub1;
+setTimeout(() => {
+  sub1 = helloWorld$.subscribe({
+    next(x) {
+      console.log('ZWO', x);
+    },
+    error(err) {
+      console.error('ERROR', err);
+    },
+    complete() {
+      console.log('done');
+    }
+  });
+}, 7000);
 
-setTimeout(() => sub.unsubscribe(), 9100);
+setTimeout(() => {
+  sub.unsubscribe();
+  sub1?.unsubscribe();
+}, 6000);
