@@ -4,6 +4,7 @@ import { Observable, of, timer } from 'rxjs';
 import {
   catchError,
   concatMap,
+  delay,
   exhaustMap,
   map,
   mergeMap,
@@ -43,7 +44,16 @@ export class TodoService {
   // TODO: Fix the return type of this method
   private query(): Observable<Todo[]> {
     return this.http.get<TodoApi[]>(`${todosUrl}`).pipe(
-      retry({ count: 3, resetOnSuccess: true }),
+      // retry({
+      //   count: 3,
+      //   resetOnSuccess: true,
+      //   delay: 2000
+      // }),
+      retry({
+        count: 3,
+        resetOnSuccess: true,
+        delay: () => of(true).pipe(delay(2000))
+      }),
       catchError(() => of([])),
       tap((list) => console.log(list)),
       map((list) => list.map((t) => this.toolbelt.toTodo(t))),
