@@ -1,17 +1,19 @@
-import { Observable } from 'rxjs';
+import { timer } from 'rxjs';
 
 // Create observable
-const helloWorld$ = new Observable(function (observer) {
-  let i = 0;
-  const int = setInterval(() => {
-    console.log('intern', i);
-    observer.next(i++);
-  }, 1000);
+// const helloWorld$ = new Observable(function (observer) {
+//   let i = 0;
+//   const int = setInterval(() => {
+//     console.log('intern', i);
+//     observer.next(i++);
+//   }, 1000);
 
-  return () => {
-    clearInterval(int);
-  };
-});
+//   return () => {
+//     clearInterval(int);
+//   };
+// });
+
+const helloWorld$ = timer(5000, 2000);
 
 // Subscribe to an observable
 const sub = helloWorld$.subscribe({
@@ -26,4 +28,4 @@ const sub = helloWorld$.subscribe({
   }
 });
 
-setTimeout(() => sub.unsubscribe(), 3000);
+setTimeout(() => sub.unsubscribe(), 9100);
