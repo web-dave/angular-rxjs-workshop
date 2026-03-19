@@ -1,6 +1,15 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { Observable, of, Subject } from 'rxjs';
+import {
+  first,
+  map,
+  merge,
+  Observable,
+  of,
+  skip,
+  Subject,
+  withLatestFrom
+} from 'rxjs';
 import { Todo } from './models';
 import { TodoService } from './todo.service';
 import { TodosPinnedComponent } from './internals/components/todos-pinned/todos-pinned.component';
@@ -26,17 +35,23 @@ export class TodosComponent implements OnInit {
   sp = false;
   todos$ = new Observable<Todo[]>();
   todosSource$ = this.todosService.loadFrequently();
-  todosInitial$ = new Observable<Todo[]>();
-  todosMostRecent$ = new Observable<Todo[]>();
+  todosInitial$ = this.todosSource$.pipe(first());
+  update$$ = new Subject<'update'>();
 
-  update$$ = new Subject<void>();
+  todosMostRecent$ = this.update$$.pipe(
+    withLatestFrom(this.todosSource$.pipe(skip(1))),
+    // map(data => data[1]),
+    map(([, list]) => list)
+  );
+
   show$ = new Observable<boolean>();
   hide$ = new Observable<boolean>();
   showReload$: Observable<boolean> = of(true);
 
   ngOnInit(): void {
     // TODO: Control update of todos in App (back pressure)
-    this.todos$ = this.todosSource$;
+
+    this.todos$ = merge(this.todosInitial$, this.todosMostRecent$);
 
     // TODO: Control display of refresh button
   }
