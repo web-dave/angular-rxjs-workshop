@@ -10,7 +10,7 @@ import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'dos-todo-settings',
-  imports:[MatDialogModule, AsyncPipe],
+  imports: [MatDialogModule, AsyncPipe],
   template: `
     <h2 mat-dialog-title>Settings</h2>
     @if(settings$ | async; as settings) {
@@ -37,12 +37,10 @@ import { AsyncPipe } from '@angular/common';
         </label>
       </div>
     </mat-dialog-content>
-  }
+    }
 
     <mat-dialog-actions align="end">
-      <button mat-dialog-close="" class="todo__button--primary">
-        CLOSE
-      </button>
+      <button mat-dialog-close="" class="todo__button--primary">CLOSE</button>
     </mat-dialog-actions>
   `
 })
