@@ -14,6 +14,7 @@ import {
   switchMap,
   tap
 } from 'rxjs/operators';
+import { WebSocketSubject } from 'rxjs/webSocket';
 import { Toolbelt } from './internals';
 import { Todo, TodoApi } from './models';
 import { TodoSettings } from './todo-settings.service';
@@ -30,7 +31,15 @@ export class TodoService {
 
   loadFrequently() {
     // TODO: Introduce error handled, configured, recurring, all-mighty stream
-    return timer(500, 5000).pipe(
+
+    return this.settings.settings$.pipe(
+      switchMap(({ pollingInterval, isPollingEnabled }) => {
+        if (isPollingEnabled) {
+          return timer(0, pollingInterval || 5000);
+        } else {
+          return of(0);
+        }
+      }),
       exhaustMap(() =>
         // mergeMap(() =>
         // concatMap(() =>
