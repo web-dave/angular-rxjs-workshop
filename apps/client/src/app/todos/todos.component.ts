@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import {
+  delay,
   first,
   map,
   merge,
@@ -44,9 +45,15 @@ export class TodosComponent implements OnInit {
     map(([, list]) => list)
   );
 
-  show$ = new Observable<boolean>();
-  hide$ = new Observable<boolean>();
-  showReload$: Observable<boolean> = of(true);
+  show$ = this.todosSource$.pipe(
+    skip(1),
+    map(() => true)
+  );
+  hide$ = this.update$$.pipe(
+    delay(150),
+    map(() => false)
+  );
+  showReload$: Observable<boolean> = merge(this.show$, this.hide$);
 
   ngOnInit(): void {
     // TODO: Control update of todos in App (back pressure)
